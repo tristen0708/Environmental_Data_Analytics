@@ -48,11 +48,11 @@ matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma c
                                   c("un", "deux", "trois", "cat"))) #
 matrix3
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] #Go to matrix 1, row 4, and read the value in every column 
+matrix1[ , 3] #Go to matrix 1, column 3, and read the value in every row
+matrix1[c(12, 14)] #Concatenate; Print elements 12 and 14 in matrix 1
+matrix1[c(12:14)] #Concatenate; Print all elements between 12 and 14 in matrix 1
+matrix1[2:4, 1:3] #Go to matrix 1, and read all values in rows 2 through 4 and columns 1 through 3
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
@@ -66,28 +66,33 @@ list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3
 list1[[2]]
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
-dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+d <- c(1, 2, 3, 4) # What type of vector? Numeric
+e <- c("red", "white", "red", NA) # What type of vector? Character
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? Logical
+dataframe1 <- data.frame(d,e,f) #Combine each vector into a data frame; Each vector will be a column
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # Names columns 1,2,3 as ID, Color, Passed respectively
 
-dataframe1[1:2] # 
-dataframe1[c("ID","Passed")] # 
-dataframe1$Color # 
+dataframe1[1:2] # This prints columns 1 through 2 from dataframe 1
+dataframe1[c("ID","Passed")] #This concatenates columns named ID and Passed from dataframe 1 
+dataframe1$Color # Using the dolla $ign calls out that particular column
 
 ```
 QUESTION: How do the different types of data appear in the Environment tab?
 
-> ANSWER: 
+> ANSWER: They appear under different sections according to their category
 
 QUESTION: In the R chunk below, write "dataframe1$". Press `tab` after you type the dollar sign. What happens?
 
-> ANSWER: 
+> ANSWER: The names of my columns show up!
+
+```{r} 
+dataframe1$ #comment ----
+
+```
 
 QUESTION: What happens when a comment in R is followed by "----"?
 
-> ANSWER:
+> ANSWER: It makes it a section!!!!!
 
 Advanced: Sequential section headers can be created by using at least four -, =, and # characters.
 
