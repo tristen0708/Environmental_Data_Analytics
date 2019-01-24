@@ -106,17 +106,17 @@ dim(USGS.flow.data)
 length(USGS.flow.data)
 
 head(USGS.flow.data)
-head(USGS.flow.data, 10)
+head(USGS.flow.data, 10) # can look at first 10 rows of data frame
 tail(USGS.flow.data, 5)
-USGS.flow.data[30000:30005, c(3, 8, 14)]
+USGS.flow.data[30000:30005, c(3, 8, 14)] # get data in a certain range and specify which columns that go with those
 
 class(USGS.flow.data$datetime)
 class(USGS.flow.data$discharge.mean)
 class(USGS.flow.data$gage.height.mean)
 
 summary(USGS.flow.data)
-summary(USGS.flow.data$discharge.mean)
-summary(USGS.flow.data$gage.height.mean)
+summary(USGS.flow.data$discharge.mean) # since this is a numeric any blank cells in csv get pulled in as NAs
+summary(USGS.flow.data$gage.height.mean) # since this is a factor any blank cells in csv get pulled in as blanks
 
 ```
 
