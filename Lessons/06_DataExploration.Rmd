@@ -48,7 +48,7 @@ colnames(USGS.flow.data) <- c("agency_cd", "site_no", "datetime",
 str(USGS.flow.data)
 dim(USGS.flow.data)
 
-#head(USGS.flow.data)
+#head(USGS.flow.data) #shows us the first 6 lines of data set!
 class(USGS.flow.data$datetime)
 
 ```
@@ -92,17 +92,17 @@ USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%m/%d/%y")
 Note that for every date prior to 1969, R has assigned the date in the 2000s rather than the 1900s. This can be fixed with an `ifelse` statement inside a function. Run through the code below and write what is happening in the comment above each line.
 
 ```{r}
-# 
+# This will format the data as 2-digit year, abb. month, and day as a number. No space separation
 USGS.flow.data$datetime <- format(USGS.flow.data$datetime, "%y%m%d")
 
-#
+#This function will choose you to have 20th century if later than last date of measurement and this century if otherwise; paste0 amends 19/20 to the d = yy/mo/day
 create.early.dates <- (function(d) {
        paste0(ifelse(d > 181231,"19","20"),d)
        })
-#
+#This now allows us to fun our data in our function and change all of the early dates to the right year
 USGS.flow.data$datetime <- create.early.dates(USGS.flow.data$datetime)
 
-#
+#This re-formats it as 4 digit year, abbr. month, day as number; changes back to date from character class
 USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y%m%d") 
 
 ```
@@ -117,11 +117,11 @@ summary(USGS.flow.data$gage.height.mean)
 ```
 Question: What types of research questions might make it favorable to remove NAs from a dataset, and what types of research questions might make it favorable to retain NAs in the dataset?
 
-> Answer: 
+> Answer: Qualitative data may have N/As that acutally mean something; N/As could mess up quantitative analysis
 
 ```{r}
-USGS.flow.data.complete <- na.omit(USGS.flow.data)
-dim(USGS.flow.data)
+USGS.flow.data.complete <- na.omit(USGS.flow.data) #will remove entire row if there is one NA
+dim(USGS.flow.data)  #complete.cases tell you which cases (rows) are complete- does a query
 dim(USGS.flow.data.complete)
 
 mean(USGS.flow.data.complete$discharge.mean)
