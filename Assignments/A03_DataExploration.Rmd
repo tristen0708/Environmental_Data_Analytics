@@ -1,6 +1,6 @@
 ---
 title: "Assignment 3: Data Exploration"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -30,6 +30,10 @@ The completed exercise is due on Thursday, 31 January, 2019 before class begins.
 Check your working directory, load necessary packages (tidyverse), and upload the North Temperate Lakes long term monitoring dataset for the light, temperature, and oxygen data for three lakes (file name: NTL-LTER_Lake_ChemistryPhysics_Raw.csv). Type your code into the R chunk below.
 ```{r}
 
+getwd()
+library(tidyverse)
+NTL.data <- read.csv("/Users/Tristen/OneDrive - Duke University/Spring 2019/Data Analytics/Environmental_Data_Analytics/Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
 ```
 
 ## 2) Learn about your system
@@ -37,6 +41,17 @@ Check your working directory, load necessary packages (tidyverse), and upload th
 Read about your dataset in the NTL-LTER README file. What are three salient pieces of information you gained from reading this file?
 
 > ANSWER: 
+
+>1) We are told where/when our data was accessed (North Temperate Lakes Long Term Ecological     Research website on 2018-12-06), 
+
+>2) how it was downloaded (important for reproducibility- 
+  * Cascade (NTL Categories)
+  * Cascade Project at North Temperate Lakes LTER Core Data Carbon 1984 - 2016 AND
+  * Cascade Project at North Temperate Lakes LTER Core Data Nutrients 1991 - 2016 AND
+  * Cascade Project at North Temperate Lakes LTER Core Data Physical and Chemical Limnology     1984 - 2016
+  * On each of the three pages, Download All Data (csv) was chosen.), 
+
+>3) and the units our carbon and nutrient data will be in and how the measurements were       gathered/read in the field/lab. 
 
 ## 3) Obtain basic summaries of your data
 
@@ -50,27 +65,35 @@ Write R commands to display the following information:
 
 ```{r}
 # 1
-
+dim(NTL.data)
 # 2
-
+class(NTL.data)
 # 3
-
+head(NTL.data, n=8)
 # 4
-
+class(NTL.data$lakename)
+class(NTL.data$sampledate)
+class(NTL.data$depth)
+class(NTL.data$temperature_C)
 # 5
-
+summary(NTL.data$lakename)
+summary(NTL.data$depth)
+summary(NTL.data$temperature_C)
 ```
 
-Change sampledate to class = date. After doing this, write an R command to display that the class of sammpledate is indeed date. Write another R command to show the first 10 rows of the date column. 
+Change sampledate to class = date. After doing this, write an R command to display that the class of sampledate is indeed date. Write another R command to show the first 10 rows of the date column. 
 
 ```{r}
+
+NTL.data$sampledate <- as.Date(NTL.data$sampledate, format = "%m/%d/%y")
+class(NTL.data$sampledate)
+head(NTL.data$sampledate, n = 10)
 
 ```
 
 Question: Do you want to remove NAs from this dataset? Why or why not?
 
-> ANSWER: 
-
+> ANSWER: No, because NAs seemed to be scattered across the entire dataset and we wouldn't want to remove any rows with just one NA and lose other information. This indicates that NAs are not likely attributable to measuring errors or the inability to measure for a long period of time. Instead, we can leave the NAs in and if we think NAs might impact a particular analysis, we can tell R to ignore the NAs for that particular function.
 
 ## 4) Explore your data graphically
 
@@ -84,32 +107,48 @@ Write R commands to display graphs depicting:
 6. Boxplot of temperature based on depth, with depth divided into 0.25 m increments
 7. Scatterplot of temperature by depth
 
-```{r}
-# 1
+```{r, fig.height = 3, fig.width = 4}
+# 1: Bar chat of temperature counts for each lake
+ggplot(NTL.data, aes(x = temperature_C)) +
+  geom_bar()
 
 # 2
+ggplot(NTL.data) +
+  geom_histogram(aes(x = temperature_C))
 
 # 3
+ggplot(NTL.data) +
+  geom_histogram(aes(x = temperature_C), bins = 100)
 
 # 4
+ggplot(NTL.data) +
+  geom_freqpoly(aes(x = temperature_C, color = lakename), bins = 50) +
+  scale_x_continuous(limits = c(0, 10)) +
+  theme(legend.position = "top")
 
 # 5
+ggplot(NTL.data) +
+  geom_boxplot(aes(x = lakename, y = temperature_C))
 
 # 6
+ggplot(NTL.data) +
+  geom_boxplot(aes(x = depth, y = temperature_C, group = cut_width(depth, 0.25)))
 
 # 7 
+ggplot(NTL.data) +
+  geom_point(aes(y = temperature_C, x = depth))
 
 ```
 ## 5) Form questions for further data analysis
 
 What did you find out about your data from the basic summaries and graphs you made? Describe in 4-6 sentences.
 
-> ANSWER: 
+> ANSWER: The deeper we take measurements, the lower the temperature. Most of the measurements have temperatures around 5 degrees Celsius. East Long Lake and Hummingbird Lake seem to have lower temperatures on average, but both have an outlier that is far higher than any other lake. Also, there is clearly a difference is the temperature range that the different lakes experience.
 
-What are 3 further questions you might ask as you move forward with  analysis of this dataset?
+What are 3 further questions you might ask as you move forward with analysis of this dataset?
 
-> ANSWER 1: 
+> ANSWER 1: Are East Long Lake and Hummingbird Lake near each other and if so, can we attribute the outliers to some extreme event that may have affected them both?
 
-> ANSWER 2: 
+> ANSWER 2: Is the shape of the curve from plot 3 (frequency counts of temperature) attributable to season or a different factor?
 
-> ANSWER 3: 
+> ANSWER 3: What is the relationship between temperature and dissolved oxygen? Temperature and irradiance? Are these relationships what we expect, and if not should we collect additional data?
