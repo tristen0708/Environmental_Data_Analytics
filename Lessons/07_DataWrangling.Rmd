@@ -11,7 +11,7 @@ editor_options:
 ## LESSON OBJECTIVES
 1. Describe the usefulness of data wrangling and its place in the data pipeline
 2. Wrangle datasets with dplyr functions
-3. Apply data wrangling skills to a real-world example dataset
+3. Apply data wrangling (getting datasets into form we can use) skills to a real-world example dataset
 
 ## OPENING DISCUSSION
 
@@ -72,7 +72,7 @@ A few relevant commands:
 class(NTL.phys.data$lakeid)
 class(NTL.phys.data$depth)
 
-# matrix filtering
+# matrix filtering- because this is in a matric we need to put the comma after zero to tell this function which columns to work out of - leaving it blank means all of them
 NTL.phys.data.surface1 <- NTL.phys.data[NTL.phys.data$depth == 0,]
 
 # dplyr filtering
@@ -80,9 +80,9 @@ NTL.phys.data.surface2 <- filter(NTL.phys.data, depth == 0)
 NTL.phys.data.surface3 <- filter(NTL.phys.data, depth < 0.25)
 
 # Did the methods arrive at the same result?
-head(NTL.phys.data.surface1)
+head(NTL.phys.data.surface1) # row numbers refer to original spot in first dataset
 dim(NTL.phys.data.surface1)
-head(NTL.phys.data.surface2)
+head(NTL.phys.data.surface2) # row numbers are new for new dataframe
 dim(NTL.phys.data.surface2)
 head(NTL.phys.data.surface3)
 dim(NTL.phys.data.surface3)
@@ -105,12 +105,13 @@ NTL.phys.data.JunethruOctober4 <- filter(NTL.phys.data, daynum %in% c(152:304))
 
 # Exercise: 
 # filter NTL.phys.data for the year 1999
+NTL.phys.data.1999 <- filter(NTL.phys.data, year4 == 1999)
 # what code do you need to use, based on the class of the variable?
 class(NTL.phys.data$year4)
 
 # Exercise: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+NTL.phys.data.1990.1999 <- filter(NTL.phys.data, lakename == "Tuesday Lake", year4 >= 1990, year4 <= 1999)
 
 ```
 Question: Why don't we filter using row numbers?
@@ -122,13 +123,15 @@ Question: Why don't we filter using row numbers?
 Arranging allows us to change the order of rows in our dataset. By default, the arrange function will arrange rows in ascending order.
 
 ```{r}
-NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)
+NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)  #by default, arrange does so in ascending order)
 NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
 
 # Exercise: 
 # Arrange NTL.phys.data by temperature, in descending order. 
-# Which dates, lakes, and depths have the highest temperatures?
+NTL.phys.data.temp.descending <- arrange(NTL.phys.data, desc(temperature_C))
 
+# Which dates, lakes, and depths have the highest temperatures?
+#East Long Lake in year 1998 at depth 0.5 and Hummingbird Lake in year 2000 at depth 0
 
 ```
 ### Select
@@ -168,7 +171,7 @@ Notice that we did not place the dataset name inside the wrangling function but 
 ### Saving processed datasets
 
 ```{r}
-write.csv(NTL.phys.data.PeterPaul1, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+#write.csv(NTL.phys.data.PeterPaul1, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
 ```
 
 ## CLOSING DISCUSSION
