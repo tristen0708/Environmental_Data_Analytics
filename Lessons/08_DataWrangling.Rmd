@@ -26,29 +26,29 @@ NTL.nutrient.data <- read.csv("./Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv")
 ```{r}
 # Data summaries for physical data
 head(NTL.phys.data.PeterPaul)
-colnames(NTL.phys.data.PeterPaul)
+colnames(NTL.phys.data.PeterPaul) #we could choose to rename to include units
 dim(NTL.phys.data.PeterPaul)
 summary(NTL.phys.data.PeterPaul$comments)
-class(NTL.phys.data.PeterPaul$sampledate)
+class(NTL.phys.data.PeterPaul$sampledate) #before we saved this column as a date - but when we exported as a csv R forgot - so we need to format
 
 # Format sampledate as date
 NTL.phys.data.PeterPaul$sampledate <- as.Date(NTL.phys.data.PeterPaul$sampledate, format = "%m/%d/%y")
 
 # Select Peter and Paul Lakes from the nutrient dataset
-NTL.nutrient.data.PeterPaul <- filter(NTL.nutrient.data, lakename == "Paul Lake" | lakename == "Peter Lake")
+NTL.nutrient.data.PeterPaul <- filter(NTL.nutrient.data, lakename == "Paul Lake" | lakename == "Peter Lake")  #filter chooses ROWS ; select chooses COLUMNS
 
 # Data summaries for nutrient data
 head(NTL.nutrient.data.PeterPaul)
 colnames(NTL.nutrient.data.PeterPaul)
 dim(NTL.nutrient.data.PeterPaul)
-summary(NTL.nutrient.data.PeterPaul$comments)
+summary(NTL.nutrient.data.PeterPaul$comments)  
 class(NTL.nutrient.data.PeterPaul$sampledate)
 NTL.nutrient.data.PeterPaul$sampledate <- as.Date(NTL.nutrient.data.PeterPaul$sampledate, format = "%m/%d/%y")
 
 # Save processed nutrient file
 write.csv(NTL.nutrient.data.PeterPaul, row.names = FALSE, file = "./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 
-# Remove columns that are not of interest for analysis
+# Remove columns that are not of interest for analysis - could use "drop.levels"
 NTL.phys.data.PeterPaul.skinny <- select(NTL.phys.data.PeterPaul, 
                                          lakename, daynum, year4, sampledate:irradianceDeck)
   
@@ -68,7 +68,7 @@ For most situations, data analysis works best when you have organized your data 
 However, there may be situations where we want to reshape our dataset, for example if we want to facet numerical data points by measurement type (more on this in the data visualization unit). We can program this reshaping in a few short lines of code using the package `tidyr`, which is conveniently included in the `tidyverse` package. 
 
 ```{r}
-# Gather nutrient data into one column
+# Gather nutrient data into one column  - gather and spread are with tidyr
 NTL.nutrient.data.PeterPaul.gathered <- gather(NTL.nutrient.data.PeterPaul.skinny, "nutrient", "concentration", tn_ug:po4)
 NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration))
 count(NTL.nutrient.data.PeterPaul.gathered, nutrient)
@@ -112,7 +112,7 @@ write.csv(NTL.phys.nutrient.data.PeterPaul, row.names = FALSE,
 A package that makes coercing date much easier is `lubridate`. A guide to the package can be found at https://lubridate.tidyverse.org/. The cheat sheet within that web page is excellent too. This package can do many things (hint: look into this package if you are having unique date-type issues), but today we will be using two of its functions for our NTL dataset. 
 
 ```{r}
-#install.packages(lubridate)
+install.packages(lubridate)
 library(lubridate)
 
 # add a month column to the dataset
@@ -122,7 +122,7 @@ NTL.phys.nutrient.data.PeterPaul <- mutate(NTL.phys.nutrient.data.PeterPaul, mon
 NTL.phys.nutrient.data.PeterPaul <- select(NTL.phys.nutrient.data.PeterPaul, lakename, year4, month, sampledate:po4)
 
 # find out the start and end dates of the dataset
-interval(NTL.phys.nutrient.data.PeterPaul$sampledate[1], NTL.phys.nutrient.data.PeterPaul$sampledate[23372])
+interval(NTL.phys.nutrient.data.PeterPaul$sampledate[1], NTL.phys.nutrient.data.PeterPaul$sampledate[23372]) #this may not be as reproducible
 interval(first(NTL.phys.nutrient.data.PeterPaul$sampledate), last(NTL.phys.nutrient.data.PeterPaul$sampledate))
 ```
 
@@ -136,7 +136,7 @@ NTL.PeterPaul.summaries <-
   NTL.phys.nutrient.data.PeterPaul %>%
   filter(depth == 0) %>%
   group_by(lakename) %>%
-  filter(!is.na(temperature_C) & !is.na(tn_ug) & !is.na(tp_ug)) %>%
+  filter(!is.na(temperature_C) & !is.na(tn_ug) & !is.na(tp_ug)) %>%  #! means not
   summarise(meantemp = mean(temperature_C), 
             sdtemp = sd(temperature_C), 
             meanTN = mean(tn_ug), 
