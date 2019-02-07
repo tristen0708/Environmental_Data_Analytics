@@ -32,7 +32,7 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 
 2. Generate a few lines of code to get to know your datasets (basic data summaries, etc.).
 
-```{r}
+```{r, results='hide'}
 #1
 getwd()
 library(tidyverse)
@@ -88,13 +88,17 @@ EPA.pm25.17$Date <- as.Date(EPA.pm25.17$Date, format = "%m/%d/%y")
 EPA.pm25.18$Date <- as.Date(EPA.pm25.18$Date, format = "%m/%d/%y")
 
 #4
-EPA.ozone.17.processed <- select(EPA.ozone.17, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+EPA.ozone.17.processed <- select(EPA.ozone.17, "Date", "DAILY_AQI_VALUE", 
+  "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
 
-EPA.ozone.18.processed <- select(EPA.ozone.18, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+EPA.ozone.18.processed <- select(EPA.ozone.18, "Date", "DAILY_AQI_VALUE", 
+  "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
 
-EPA.pm25.17.processed <- select(EPA.pm25.17, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+EPA.pm25.17.processed <- select(EPA.pm25.17, "Date", "DAILY_AQI_VALUE", 
+  "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
 
-EPA.pm25.18.processed <- select(EPA.pm25.18, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+EPA.pm25.18.processed <- select(EPA.pm25.18, "Date", "DAILY_AQI_VALUE", 
+  "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
 
 #5
 EPA.pm25.17.processed$AQS_PARAMETER_DESC <- "PM2.5"
@@ -129,16 +133,20 @@ write.csv(EPA.pm25.18.processed, row.names = FALSE,
 
 ```{r}
 #7
-EPA.ozone.pm25.1718.combined <- rbind(EPA.ozone.17.processed, EPA.ozone.18.processed, EPA.pm25.17.processed, EPA.pm25.18.processed)
+EPA.ozone.pm25.1718.combined <- 
+  rbind(EPA.ozone.17.processed, EPA.ozone.18.processed, 
+        EPA.pm25.17.processed, EPA.pm25.18.processed)
 
 #8
 EPA.ozone.pm25.1718.combined <-
   EPA.ozone.pm25.1718.combined %>%
-  filter(Site.Name == "Blackstone"| Site.Name == "Bryson City" | Site.Name == "Triple Oak") %>%  
+  filter(Site.Name == "Blackstone"| Site.Name == "Bryson City" | 
+          Site.Name == "Triple Oak") %>%  
   mutate_at(vars(Date), funs(year, month))
 
 #9
-EPA.ozone.pm25.1718.spread <- spread(EPA.ozone.pm25.1718.combined, AQS_PARAMETER_DESC, DAILY_AQI_VALUE)
+EPA.ozone.pm25.1718.spread <- spread(EPA.ozone.pm25.1718.combined, 
+  AQS_PARAMETER_DESC, DAILY_AQI_VALUE)
 
 #10
 dim(EPA.ozone.pm25.1718.spread)
@@ -181,6 +189,7 @@ EPA.ozone.pm25.1718.summaries.site <-
     PM25.Min.By.Site = min(PM2.5),
     PM25.Max.By.Site = max(PM2.5)
     )
+
 
 #13
 pander(EPA.ozone.pm25.1718.summaries.month, type = 'grid')
