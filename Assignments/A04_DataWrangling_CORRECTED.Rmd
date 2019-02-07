@@ -1,13 +1,13 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
 ---
 
-## OVERVIEW
+## OVERVIEW 
 
 This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) on data wrangling. 
 
@@ -34,8 +34,39 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 
 ```{r}
 #1
+getwd()
+library(tidyverse)
+library(dplyr)
+library(forcats)
+library(lubridate)
+library(pander)
+
+EPA.ozone.17 <- read.csv("./Data/Raw/EPAair_O3_NC2017_raw.csv")
+EPA.ozone.18 <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv")
+EPA.pm25.17 <- read.csv("./Data/Raw/EPAair_PM25_NC2017_raw.csv")
+EPA.pm25.18 <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv")
 
 #2
+head(EPA.ozone.17)
+colnames(EPA.ozone.17)
+summary(EPA.ozone.17)
+dim(EPA.ozone.17)
+
+head(EPA.ozone.18)
+colnames(EPA.ozone.18)
+summary(EPA.ozone.18)
+dim(EPA.ozone.18)
+
+head(EPA.pm25.17)
+colnames(EPA.pm25.17)
+summary(EPA.pm25.17)
+dim(EPA.pm25.17)
+
+head(EPA.pm25.18)
+colnames(EPA.pm25.18)
+summary(EPA.pm25.18)
+dim(EPA.pm25.18)
+
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -46,12 +77,41 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 
 ```{r}
 #3
+class(EPA.ozone.17$Date)
+class(EPA.ozone.18$Date)
+class(EPA.pm25.17$Date)
+class(EPA.pm25.18$Date)
+
+EPA.ozone.17$Date <- as.Date(EPA.ozone.17$Date, format = "%m/%d/%y")
+EPA.ozone.18$Date <- as.Date(EPA.ozone.18$Date, format = "%m/%d/%y")
+EPA.pm25.17$Date <- as.Date(EPA.pm25.17$Date, format = "%m/%d/%y")
+EPA.pm25.18$Date <- as.Date(EPA.pm25.18$Date, format = "%m/%d/%y")
 
 #4
+EPA.ozone.17.processed <- select(EPA.ozone.17, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+
+EPA.ozone.18.processed <- select(EPA.ozone.18, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+
+EPA.pm25.17.processed <- select(EPA.pm25.17, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
+
+EPA.pm25.18.processed <- select(EPA.pm25.18, "Date", "DAILY_AQI_VALUE", "Site.Name", "AQS_PARAMETER_DESC", "COUNTY", "SITE_LATITUDE", "SITE_LONGITUDE")
 
 #5
+EPA.pm25.17.processed$AQS_PARAMETER_DESC <- "PM2.5"
+EPA.pm25.18.processed$AQS_PARAMETER_DESC <- "PM2.5"
 
 #6
+write.csv(EPA.ozone.17.processed, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_NC2017_processed.csv")
+
+write.csv(EPA.ozone.18.processed, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_NC2018_processed.csv")
+
+write.csv(EPA.pm25.17.processed, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_PM25_NC2017_processed.csv")
+
+write.csv(EPA.pm25.18.processed, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_PM25_NC2018_processed.csv")
 
 ```
 
@@ -68,13 +128,24 @@ The completed exercise is due on Thursday, 7 February, 2019 before class begins.
 11. Save your processed dataset with the following file name: "EPAair_O3_PM25_NC1718_Processed.csv"
 
 ```{r}
+#7
+EPA.ozone.pm25.1718.combined <- rbind(EPA.ozone.17.processed, EPA.ozone.18.processed, EPA.pm25.17.processed, EPA.pm25.18.processed)
+
 #8
+EPA.ozone.pm25.1718.combined <-
+  EPA.ozone.pm25.1718.combined %>%
+  filter(Site.Name == "Blackstone"| Site.Name == "Bryson City" | Site.Name == "Triple Oak") %>%  
+  mutate_at(vars(Date), funs(year, month))
 
 #9
+EPA.ozone.pm25.1718.spread <- spread(EPA.ozone.pm25.1718.combined, AQS_PARAMETER_DESC, DAILY_AQI_VALUE)
 
 #10
+dim(EPA.ozone.pm25.1718.spread)
 
 #11
+write.csv(EPA.ozone.pm25.1718.spread, row.names = FALSE, 
+          file ="./Data/Processed/EPAair_O3_PM25_NC1718_Processed.csv")
 
 ```
 
@@ -85,12 +156,35 @@ a. A summary table of mean AQI values for O3 and PM2.5 by month
 b. A summary table of the mean, minimum, and maximum AQI values of O3 and PM2.5 for each site
 13. Display the data frames.
 
-```{r}
+```{r, comment=NA}
+
 #12a
+EPA.ozone.pm25.1718.summaries.month <- 
+  EPA.ozone.pm25.1718.spread  %>% 
+  group_by(month) %>% 
+  filter(!is.na(Ozone) & !is.na(PM2.5)) %>%
+  summarise(
+    Monthly.Ozone.Averages = mean(Ozone),
+    Monthly.PM25.Averages = mean(PM2.5)
+    )
 
 #12b
+EPA.ozone.pm25.1718.summaries.site <- 
+  EPA.ozone.pm25.1718.spread  %>% 
+  group_by(Site.Name) %>% 
+  filter(!is.na(Ozone) & !is.na(PM2.5)) %>%
+  summarise(
+    Ozone.Average.By.Site = mean(Ozone),
+    Ozone.Min.By.Site = min(Ozone),
+    Ozone.Max.By.Site = max(Ozone),
+    PM25.Average.By.Site= mean(PM2.5),
+    PM25.Min.By.Site = min(PM2.5),
+    PM25.Max.By.Site = max(PM2.5)
+    )
 
 #13
+pander(EPA.ozone.pm25.1718.summaries.month, type = 'grid')
+pander(EPA.ozone.pm25.1718.summaries.site, type = 'grid')
 
 ```
 
