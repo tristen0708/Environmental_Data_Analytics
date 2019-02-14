@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -34,6 +34,18 @@ The completed exercise is due on Thursday, 14 February, 2019 before class begins
 
 ```{r}
 #1
+
+getwd()
+library(tidyverse)
+library(dplyr)
+library(forcats)
+library(lubridate)
+library(pander)
+
+Peter.Paul.tidy <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+USGS <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+
+
 
 #2
 ```
