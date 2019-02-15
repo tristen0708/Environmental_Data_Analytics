@@ -34,6 +34,7 @@ The completed exercise is due on Tuesday, 19 February, 2019 before class begins.
 
 ```{r}
 #1
+clear
 
 getwd()
 library(tidyverse)
@@ -41,13 +42,32 @@ library(dplyr)
 library(forcats)
 library(lubridate)
 library(pander)
+library(viridis)
+library(RColorBrewer)
+library(colormap)
 
-Peter.Paul.tidy <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
-USGS <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+Peter.Paul <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+USGS <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
+EPA.ecotox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
 
-
+class(Peter.Paul$sampledate)
+class(USGS$datetime)
+class(EPA.ecotox$Pub..Year)
 
 #2
+
+Peter.Paul$sampledate <- as.Date(Peter.Paul$sampledate, format = "%m/%d/%y")
+USGS$datetime <- as.numeric(USGS$datetime, format = "%y%m%d")
+#EPA.ecotox$Pub..Year <- as.Date(EPA.ecotox$Pub..Year, format = "%Y", origin="1970") #what
+
+USGS$datetime <- format(USGS$datetime, "%y%m%d")
+create.early.dates <- (function(d) {
+       paste0(ifelse(d > 181231,"19","20"),d)
+       })
+
+USGS$datetime <- create.early.dates(USGS$datetime)
+USGS$datetime <- as.Date(USGS$datetime, format = "%Y%m%d")
+
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme.
