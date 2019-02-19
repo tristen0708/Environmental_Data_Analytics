@@ -84,7 +84,7 @@ O3.onesample
 
 What information does the output give us? How might we report this information in a report?
 
-> ANWSER:
+> ANWSER: Ozone AQI values are significantly lower than 50 (t-test; t = -41.9, df = 184, p < 0.0001)
 
 ### Two-sample t-test
 The two-sample *t* test is used to test the hypothesis that the mean of two samples is equivalent. Unlike the one-sample tests, a two-sample test requires a second assumption that the variance of the two groups is equivalent. Are Ozone levels different between Blackstone and Bryson City?
@@ -112,9 +112,9 @@ When we wish to avoid the assumption of normality, we can apply *distribution-fr
 
 ```{r}
 O3.onesample.wilcox <- wilcox.test(EPAair$Ozone, mu = 50, alternative = "less")
-O3.onesample.wilcox
+O3.onesample.wilcox #gives u a V
 O3.twosample.wilcox <- wilcox.test(EPAair$Ozone ~ EPAair$Site.Name)
-O3.twosample.wilcox
+O3.twosample.wilcox #gives u a W - may want to use if you have departed from normality a lot
 ```
 
 ### One-way ANOVA
@@ -145,14 +145,14 @@ TukeyHSD(PM2.5.anova2)
 
 # Plot the results
 # How might you edit this graph to make it attractive?
-# How might you illustrate significant differences?
+# How might you illustrate significant differences? Could put a star abouce blackstone or could group bryson and triple as B and make blackstone group A
 PM2.5.anova.plot <- ggplot(EPAair, aes(x = Site.Name, y = PM2.5)) +
   geom_violin(draw_quantiles = 0.5)
 print(PM2.5.anova.plot)
 ```
 What information does the output give us? How might we report this information in a report?
 
-> ANSWER:
+> ANSWER: Blackstone has higher values of PM2.5 on average than Bryson City and Triple Oak (ANOVA; F = 16.16, df = 1898, p < 0.0001). Bryson City and Triple Oak did not hve significantly different values over the study period.
 
 ### Non-parametric equivalent of ANOVA: Kruskal-Wallis Test
 As with the Wilcoxon test, the Kruskal-Wallis test is the non-parametric counterpart to the one-way ANOVA. Here, the data from two or more independent samples are replaced with their ranks without regard to the grouping AND based on the between-group sum of squares calculations. 
