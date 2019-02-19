@@ -46,20 +46,30 @@ library(viridis)
 library(RColorBrewer)
 library(colormap)
 
-Peter.Paul <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
+Peter.Paul <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+Peter.Paul.gathered <- read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
 USGS <- read.csv("./Data/Raw/USGS_Site02085000_Flow_Raw.csv")
 EPA.ecotox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
 
 class(Peter.Paul$sampledate)
+class(Peter.Paul.gathered$sampledate)
 class(USGS$datetime)
-class(EPA.ecotox$Pub..Year)
+
+colnames(USGS) <- c("agency_cd", "site_no", "datetime", 
+                              "discharge.max", "discharge.max.approval", 
+                              "discharge.min", "discharge.min.approval", 
+                              "discharge.mean", "discharge.mean.approval", 
+                              "gage.height.max", "gage.height.max.approval", 
+                              "gage.height.min", "gage.height.min.approval", 
+                              "gage.height.mean", "gage.height.mean.approval")
 
 #2
 
-Peter.Paul$sampledate <- as.Date(Peter.Paul$sampledate, format = "%m/%d/%y")
-USGS$datetime <- as.numeric(USGS$datetime, format = "%y%m%d")
-#EPA.ecotox$Pub..Year <- as.Date(EPA.ecotox$Pub..Year, format = "%Y", origin="1970") #what
+Peter.Paul$sampledate <- as.Date(Peter.Paul$sampledate, format = "%Y-%m-%d")
+Peter.Paul.gathered$sampledate <- as.Date(Peter.Paul.gathered$sampledate, format = "%Y-%m-%d")
 
+
+USGS$datetime <- as.Date(USGS$datetime, format = "%m/%d/%y") 
 USGS$datetime <- format(USGS$datetime, "%y%m%d")
 create.early.dates <- (function(d) {
        paste0(ifelse(d > 181231,"19","20"),d)
@@ -69,11 +79,15 @@ USGS$datetime <- create.early.dates(USGS$datetime)
 USGS$datetime <- as.Date(USGS$datetime, format = "%Y%m%d")
 
 ```
+
 ## Define your theme
 3. Build a theme and set it as your default theme.
 
 ```{r}
 #3
+tristentheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
 
 ```
 
@@ -86,6 +100,17 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 
 ```{r}
 #4
+theme_set(tristentheme)
+
+phosphorus <- ggplot(Peter.Paul, aes(x = po4, y = tp_ug, color = lakename)) +
+  scale_color_manual(values=c("#c994c7", "#225ea8")) +  #change colors
+  geom_point() +
+  xlim(0, 50) +
+  ylim(0, 150) +
+  geom_smooth(method = lm, color = 'black') +
+  labs(x = "Phosphate" , y = "Total Phosphorus, μgrams/L", fill = "lakename", color = "Lake Name")
+print(phosphorus)  
+
 
 ```
 
@@ -95,6 +120,25 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 ```{r}
 #5
 
+theme_set(tristentheme)
+
+nutrients <- ggplot(Peter.Paul.gathered) +
+  geom_point(aes(x = nutrient, y = concentration, color = depth)) +
+  facet_grid(concentration ~ sampledate) + 
+  scale_x_continuous(breaks = c(1:12)) +
+  labs(x = "Date" , y = "Nutrient concentration" , color = "Depth")
+print(nutrients)  
+
+Nutrientplot6 <-
+  ggplot(PeterPaul.chem.nutrients) +
+  geom_freqpoly(aes(x = tn_ug), color = "black") +
+  geom_freqpoly(aes(x = tp_ug), color = "darkblue") +
+  geom_freqpoly(aes(x = nh34), color = "darkgray") +
+  geom_freqpoly(aes(x = no23), color = "gray") +
+  geom_freqpoly(aes(x = po4), color = "blue") 
+print(Nutrientplot6)
+
+
 ```
 
 
@@ -103,15 +147,33 @@ Hint: a good way to build graphs is to make them ugly first and then create more
 ```{r}
 #6
 
+discharge <- ggplot(USGS, aes(x = datetime, y = discharge.max)) +   
+  geom_point(size = 0.5) +
+   geom_line(color = "blue") +
+    labs(x = "Date" , y = "Discharge", fill = "lakename", color = "Lake Name")
+print(discharge)   
+
+discharge2 <- ggplot(USGS, aes(x = datetime, y = discharge.max)) +   
+  geom_point(size = 0.5) +
+   geom_smooth(method="auto", color = "red")  +
+    labs(x = "Date" , y = "Discharge", fill = "lakename", color = "Lake Name")
+print(discharge2)  
+
 ```
 Question: How do these two types of lines affect your interpretation of the data?
 
-> Answer:
+> Answer: The lines from the first plot illustrates large fluctuates across time but the line in the second plot imply a steady discharge across time.
 
 7. [ECOTOX Neonicotinoids] Plot the concentration, divided by chemical name. Choose a geom that accurately portrays the distribution of data points.
 
 ```{r}
 #7 
+
+nutrients <- ggplot(EPA.ecotox) +
+  geom_boxplot(aes(x = Chemical.Name, y = Conc..Mean..Std., color = Chemical.Name)) +
+  labs(y = "Concentration", color = "Chemical Name")
+print(nutrients)  
+
 
 ```
 
