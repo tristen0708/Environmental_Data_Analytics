@@ -60,7 +60,8 @@ cor.test(PeterPaul.chem.nutrients$irradianceWater, PeterPaul.chem.nutrients$dept
 ```
 Question: How would you report the results of this test (overall findings and report of statistical output)?
 
-> ANSWER: 
+> ANSWER: When depth is zero our irradiance value will equal 486.818. A one unit increase in depth will result in a 96 unit decrease in irradiance (linear regression; R-squared = 0.3091, df = 15449, p < 0.001).
+~Irradiance is negatively correlated with depth.~
 
 So, we see there is a significant negative correlation between irradiance and depth (lower light levels at greater depths), and that this model explains about 31 % of the total variance in irradiance. Let's visualize this relationship and the model itself. 
 
@@ -75,7 +76,7 @@ An exploratory option to visualize the model fit is to use the function `plot`. 
 4. **Residuals vs. Leverage.** This graph will display potential outliers. The values that fall outside the dashed red lines (Cook's distance) are outliers for the model. Watch for drastic departures of the solid red line from horizontal - this is a sign of a poor model fit.
 
 ```{r, fig.height = 3, fig.width = 4}
-plot(irradiance.regression)
+
 ```
 
 The option best suited for communicating findings is to plot the explanatory and response variables as a scatterplot. 
@@ -84,7 +85,7 @@ The option best suited for communicating findings is to plot the explanatory and
 # Plot the regression
 irradiancebydepth <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
-  #ylim(0, 2000) +
+  ylim(0, 2000) +
   geom_point() 
 print(irradiancebydepth) 
 ```
@@ -100,9 +101,9 @@ plot(irradiance.regression2)
 # Add a line and standard error for the linear regression
 irradiancebydepth2 <- 
   ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
+  geom_point() +
   geom_smooth(method = "lm") +
-  scale_y_log10() +
-  geom_point() 
+  scale_y_log10() 
 print(irradiancebydepth2) 
 
 # SE can also be removed
@@ -114,6 +115,16 @@ irradiancebydepth2 <-
 print(irradiancebydepth2)
 
 # Make the graph attractive
+irradiancebydepth_pretty <- 
+    ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
+    geom_point(alpha=0.2) +  #lower alpha value makes more transparent
+    scale_y_log10() +
+    geom_smooth(method = 'lm', se = FALSE, color = "pink") +
+    labs(x = "Depth, m", y = "Water Irradiance, units") +
+    scale_x_continuous(breaks = seq(0, 10, 2)) +
+    annotate("text", x = 10, y = 10000, label = "y = 6.22 - 0.74x + 0.96")
+print(irradiancebydepth_pretty)
+
 
 ```
 
@@ -147,7 +158,7 @@ library(corrplot)
 PeterPaulnutrients <- 
   PeterPaul.chem.nutrients %>%
   select(tn_ug:po4) %>%
-  na.omit()
+  na.omit()   #####NO NAs!!!!!!!
 PeterPaulCorr <- cor(PeterPaulnutrients)
 corrplot(PeterPaulCorr, method = "ellipse")
 corrplot.mixed(PeterPaulCorr, upper = "ellipse")
@@ -189,5 +200,12 @@ TNplot <- ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = tn_ug, color = lak
 print(TNplot)
 
 # Make the graph attractive
+TNplot.cute <- ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = tn_ug, color = lakename)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  xlim(0, 10) +
+  labs(x = "Depth, m", y = "Total Nitrogen, micrograms/L", color = "Lake Name")
+print(TNplot.cute)
+
 ```
 
