@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: Generalized Linear Models"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
