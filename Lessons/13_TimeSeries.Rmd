@@ -21,11 +21,11 @@ getwd()
 library(tidyverse)
 #install.packages("lubridate")
 library(lubridate)
-#install.packages("nlme")
+install.packages("nlme")
 library(nlme)
-#install.packages("lsmeans")
+install.packages("lsmeans")
 library(lsmeans)
-#install.packages("multcompView")
+install.packages("multcompView")
 library(multcompView)
 
 PeterPaul.chem <- read.csv("./Data/Processed/NTL-LTER_Lake_ChemistryPhysics_PeterPaul_Processed.csv")
@@ -69,17 +69,18 @@ Let's wrangle our data and visualize a preliminary relationship between our vari
 ```{r}
 PeterPaul.summertemp <- 
   PeterPaul.chem %>%
-  select(lakename:temperature_C) %>%
+  select(lakename:temperature_C) %>% #choose columns that are important
   #filter for Julian days in June-August and surface measurements
-  filter(daynum > 151 & daynum < 243 & depth == 0 ) %>%
+  filter(daynum > 151 & daynum < 243 & depth == 0 ) %>% #getting surface temp and only summer
   #add a "week" column to represent seasonality
-  mutate(Week = week(sampledate)) %>%
+  mutate(Week = week(sampledate)) %>% #command from lubridate
   #code won't work if there are NAs
   na.exclude()
 
 ggplot(PeterPaul.summertemp, aes(x = sampledate, y = temperature_C, color = lakename)) +
   geom_point() +
   scale_color_manual(values = c("#7fcdbb", "#253494"))
+#this doesnt account for variability within the season
 ```
 
 Next, we will determine the degree of temporal autocorrelation in our dataset. We will use the package `nlme` for our analyses. Another good package for running hierarchical, or mixed-effects, models is `lme4`. For the basic types of hierarchical models, these packages have about the same functionality.
@@ -87,8 +88,8 @@ Next, we will determine the degree of temporal autocorrelation in our dataset. W
 ```{r}
 # Determine autocorrelation in residuals
 TempTest.auto <- lme(data = PeterPaul.summertemp,
-                     temperature_C ~ sampledate * lakename, 
-                     random = ~1|Week)
+                     temperature_C ~ sampledate * lakename, #fixed effects ANCOVA
+                     random = ~1|Week) #random effect
 TempTest.auto
 
 ACF(TempTest.auto)
@@ -126,11 +127,19 @@ anova(TempTest.mixed, TempTest.fixed)
 TempTest.posthoc = lsmeans(TempTest.mixed, ~ sampledate * lakename)
 cld(TempTest.posthoc, alpha = 0.05, Letters = letters, adjust = "tukey")
 
+
 # display our final relationship
 ggplot(PeterPaul.summertemp, aes(x = sampledate, y = temperature_C, color = lakename)) +
   geom_point() +
   scale_color_manual(values = c("#7fcdbb", "#253494")) +
-  geom_abline(intercept = 20.47, slope = 0.0001)
+  geom_abline(intercept = 20.47, slope = 0.0001) +
+  labs(x = "Sample Data", y = "Temperature, C", color = "") +
+  #stat_regline_equation(label.x = 3, label.y = 32)
+  geom_text(label = "y = 21 + 0.000099x", x = 2, y = 2)
+
+
+
+
 ```
 
 Question: How would you interpret the collective results of your mixed effects model in the context of the study question?
