@@ -33,9 +33,26 @@ The completed exercise is due on Tuesday, 26 February, 2019 before class begins.
 2. Build a ggplot theme and set it as your default theme.
 
 ```{r}
+
+library(tidyverse)
+library(dplyr)
+library(forcats)
+library(lubridate)
+library(pander)
+library(viridis)
+library(RColorBrewer)
+library(colormap)
+library(ggpubr)
+
 #1
+getwd()
+NTL <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+EPA.ecotox <- read.csv("./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv")
 
 #2
+tristentheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
 
 ```
 
@@ -50,8 +67,41 @@ Research question: Were studies on various neonicotinoid chemicals conducted in 
 
 ```{r}
 #3
+class(EPA.ecotox$Chemical.Name) #Factor
+levels(EPA.ecotox$Chemical.Name) #There are 9 chemicals in this column
 
 #4
+
+EPA.try <- 
+  EPA.ecotox %>%
+  group_by(Chemical.Name) %>%
+  filter()
+  
+  select(Chemical.Name, Pub..Year) %>%
+  
+    
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Acetamiprid"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Clothianidin"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Dinotefuran"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Imidacloprid"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Imidaclothiz"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nitenpyram"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nithiazine"])
+shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Thiacloprid"])
+
+  
+  group_by(Chemical.Name) %>%  
+  summarise(shaptestC1 = shapiro.test(),
+    shaptestC2 = shapiro.test(),
+    shaptestC3 = shapiro.test(),
+    shaptestC4 = shapiro.test(),
+    shaptestC5 = shapiro.test(),
+    shaptestC6 = shapiro.test(),
+    shaptestC7 = shapiro.test(),
+    shaptestC8 = shapiro.test(),
+    shaptestC9 = shapiro.test()) 
+
+#shapiro.test()
 
 #5
 

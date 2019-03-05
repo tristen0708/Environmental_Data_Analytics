@@ -73,7 +73,7 @@ NTL.nutrient.data.PeterPaul.gathered <- gather(NTL.nutrient.data.PeterPaul.skinn
 NTL.nutrient.data.PeterPaul.gathered <- subset(NTL.nutrient.data.PeterPaul.gathered, !is.na(concentration))
 count(NTL.nutrient.data.PeterPaul.gathered, nutrient)
 
-write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE, 
+#write.csv(NTL.nutrient.data.PeterPaul.gathered, row.names = FALSE, 
           file ="./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
 
 # Spread nutrient data into separate columns
@@ -102,8 +102,8 @@ Let's say we want to generate a new dataset that contains all possible physical 
 
 NTL.phys.nutrient.data.PeterPaul <- full_join(NTL.phys.data.PeterPaul.skinny, NTL.nutrient.data.PeterPaul.skinny)
 
-write.csv(NTL.phys.nutrient.data.PeterPaul, row.names = FALSE, 
-          file ="./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+#write.csv(NTL.phys.nutrient.data.PeterPaul, row.names = FALSE, 
+#          file ="./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
 
 ```
 
@@ -134,7 +134,7 @@ dplyr functionality, combined with the pipes operator, allows us to split datase
 ```{r}
 NTL.PeterPaul.summaries <- 
   NTL.phys.nutrient.data.PeterPaul %>%
-  filter(depth == 0) %>%
+  filter(depth) %>%
   group_by(lakename) %>%
   filter(!is.na(temperature_C) & !is.na(tn_ug) & !is.na(tp_ug)) %>%  #! means not
   summarise(meantemp = mean(temperature_C), 
@@ -144,8 +144,8 @@ NTL.PeterPaul.summaries <-
             meanTP = mean(tp_ug), 
             sdTP = sd(tp_ug))
 
-write.csv(NTL.PeterPaul.summaries, row.names = FALSE, 
-          file ="./Data/Processed/NTL-LTER_Lake_Summaries_PeterPaul_Processed.csv")
+#(NTL.PeterPaul.summaries, row.names = FALSE, 
+#          file ="./Data/Processed/NTL-LTER_Lake_Summaries_PeterPaul_Processed.csv")
 
 ```
 
