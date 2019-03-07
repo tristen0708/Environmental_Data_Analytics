@@ -19,7 +19,7 @@ editor_options:
 ```{r, message = FALSE, warning = FALSE}
 getwd()
 library(tidyverse)
-#install.packages("trend")
+install.packages("trend")
 library(trend)
 
 
@@ -107,8 +107,10 @@ pettitt.test(Paul.nutrients.surface$tp_ug)
 # Add vertical lines to the original graph to represent change points
 ggplot(PeterPaul.nutrients.surface, aes(x = sampledate, y = tp_ug, color = lakename)) + 
   geom_point() +
-  scale_color_manual(values = c("#7fcdbb", "#253494"))
-
+  scale_color_manual(values = c("#7fcdbb", "#253494")) +
+  geom_vline(xintercept = as.Date("1993-05-20"), linetype="dashed", color="#253494", size=1) +
+  geom_vline(xintercept = as.Date("1998-01-01"), linetype="dashed", color="#253494", size=1)
+  
 ```
 ### Seasonal Mann-Kendall
 
@@ -123,7 +125,8 @@ USGS.flow.data.trimmed <- USGS.flow.data %>%
 
 # Visualize the data
 ggplot(USGS.flow.data.trimmed, aes(x = datetime, y = discharge.mean)) +
-  geom_point(size = 0.5, alpha = 0.5)
+  geom_point(size = 0.5, alpha = 0.5) +
+  scale_y_log10()
 ```
 
 ### Interpolation
@@ -131,11 +134,18 @@ Some situations may require us to predict values for data points that fall withi
 
   + **Means interpolation:** Defines values between sampled values as the mean value within a dataset. Uses the R function `aggregate`.
   
+  -only if we had a lot of missing data
+  
   + **Piecewise constant interpolation:** Defines values between sampled values as the value of the nearest sampled value. Uses the R function `approx` with `method = "constant"`
   
+  -only if you have lots of steps or break sin time for data
+  
   + **Linear interpolation:** Defines values between sampled values based on the slope between sampled values. Uses the R function `approx` with `method = "linear"`
+  -most reliable for enviro data
   
   + **Spline interpolation:** Defines values between sampled values based on polynomial functions between sampled values and chooses the polynomials so that they fit smoothly together. Uses the R function `splinefun`.
+
+-works for more physical situations?
 
 Question: Under what circumstances would you consider each of these options for interpolation? 
 
@@ -162,7 +172,7 @@ USGS.flow.data.timeseries <- ts(USGS.flow.data.interpolated$Discharge,
 # Run a Seasonal Mann-Kendall test
 USGS.smktest <- smk.test(USGS.flow.data.timeseries)
 USGS.smktest
-summary(USGS.smktest)
+summary(USGS.smktest) #farther z-score is from zero the stronger the trend
 ```
 
 Interpreting results of the Seasonal Mann-Kendall Test: 
