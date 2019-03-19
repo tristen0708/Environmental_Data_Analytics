@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,12 +32,44 @@ The completed exercise is due on Tuesday, 19 March, 2019 before class begins.
 
 Question: Did you do this?
 
-> ANSWER: 
+> ANSWER: Yes, but I haven't decided my topic quite yet.
 
 ## Set up your session 
 2. Set up your session. Upload the EPA air quality raw dataset for PM2.5 in 2018, and the processed NTL-LTER dataset for nutrients in Peter and Paul lakes. Build a ggplot theme and set it as your default theme. Make sure date variables are set to a date format.
 
 ```{r}
+library(tidyverse)
+library(dplyr)
+library(forcats)
+library(lubridate)
+library(pander)
+library(viridis)
+library(RColorBrewer)
+library(colormap)
+library(ggpubr)
+library(trend)
+library(nlme)
+library(lsmeans)
+library(multcompView)
+
+
+#1
+getwd()
+EPAair.2018 <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv")
+NTLnutrients <- read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
+
+#2
+tristentheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "right")
+
+class(EPAair.2018$Date)
+class(NTLnutrients$sampledate)
+
+EPAair.2018$Date <- as.Date(EPAair.2018$Date, 
+                                               format = "%m/%d/%y")
+NTLnutrients$sampledate <- as.Date(NTLnutrients$sampledate, 
+                                               format = "%Y-%m-%d")
 
 ```
 
@@ -52,6 +84,15 @@ Research question: Do PM2.5 concentrations have a significant trend in 2018?
 
 ```{r}
 
+PMTest.mixed <- lme(data = EPAair.2018,
+                     Daily.Mean.PM2.5.Concentration ~ Date,
+                    random = ~1|Site.Name, method = "REML")
+summary(PMTest.mixed)
+
+ggplot(EPAair.2018, aes(x = Date, y = Daily.Mean.PM2.5.Concentration)) +
+  geom_point() +
+  labs(x = "Date", y = "Daily Mean PM2.5 Concentration, microgram/m3") 
+
 ```
 
 3b. Insert the following line of code into your R chunk. This will eliminate duplicate measurements on single dates for each site.
@@ -64,22 +105,47 @@ PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
 
 ```{r}
 
+#PM2.5 = PM2.5[order(PM2.5[,'Date'],-PM2.5[,'Site.ID']),]
+#PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
+
+PMTest.auto <- lme(data = EPAair.2018,
+                    Daily.Mean.PM2.5.Concentration ~ Date, 
+                    random = ~1|Site.Name,  method = "REML")
+PMTest.auto
+ACF(PMTest.auto)
+
+PMTest..mixed <- lme(data = EPAair.2018,
+                     Daily.Mean.PM2.5.Concentration ~ Date, 
+                     random = ~1|Site.Name, 
+#                     correlation = 
+#                     corAR1(form = ~ Date|Site.Name, value = 0.473),  
+                     method = "REML")
+summary(PMTest..mixed)
+
+
 ```
 
 Is there a significant increasing or decreasing trend in PM2.5 concentrations in 2018? 
 
-> ANSWER: 
+> ANSWER: No.
 
 3e. Run a fixed effects model with Date as the only explanatory variable. Then test whether the mixed effects model is a better fit than the fixed effect model. 
 
 ```{r}
+
+PMTest.fixed <- gls(data = EPAair.2018,
+                    Daily.Mean.PM2.5.Concentration ~ Date, 
+                    method = "REML")
+summary(PMTest.fixed)
+
+anova(PMTest.mixed, PMTest.fixed)
 
 ```
 
 
 Which model is better?
 
-> ANSWER: 
+> ANSWER: Mixed effect model is better as it has a lower AIC value.
 
 
 ## Run a Mann-Kendall test
@@ -90,16 +156,61 @@ Research question: Is there a trend in total N surface concentrations in Peter a
 
 ```{r}
 
+NTLnutrients.surface <- 
+  NTLnutrients %>%
+  select(-lakeid, -depth_id, -comments) %>%
+  filter(depth == 0) %>%
+  filter(!is.na(tn_ug))
+
+# Initial visualization of data
+ggplot(NTLnutrients.surface, aes(x = sampledate, y = tn_ug, color = lakename)) + 
+  geom_point() +
+  scale_color_manual(values = c("#7fcdbb", "#253494"))
+
+# Split dataset by lake
+Peter.nutrients.surface <- filter(NTLnutrients.surface, lakename == "Peter Lake")
+Paul.nutrients.surface <- filter(NTLnutrients.surface, lakename == "Paul Lake")
+
+#Mann-Kendall test
+mk.test(Peter.nutrients.surface$tn_ug)
+
+# Pettitt Test
+pettitt.test(Peter.nutrients.surface$tn_ug)
+
+# Run separate Mann-Kendall for each change point
+mk.test(Peter.nutrients.surface$tn_ug[1:37])
+mk.test(Peter.nutrients.surface$tn_ug[38:98])
+
+# Is there a second change point?
+pettitt.test(Peter.nutrients.surface$tp_ug[38:98])
+
+# Run another Mann-Kendall for the second change point
+mk.test(Peter.nutrients.surface$tn_ug[1:37])
+mk.test(Peter.nutrients.surface$tp_ug[38:54])
+mk.test(Peter.nutrients.surface$tp_ug[55:98])
+
+# Run the same test for Paul Lake
+mk.test(Paul.nutrients.surface$tn_ug)
+pettitt.test(Paul.nutrients.surface$tn_ug) 
 ```
 
 
 What are the results of this test?
 
-> ANSWER: 
+> ANSWER: For Peter Lake: The Pettitt Test showed two change points needing to be taken into account. After doing so, the separate Mann-Kendall test results show negative z-scores indiciating there is a negative trend amongst the data. For only the middle portion of the data is there a monotonic trend, and for the beginning and end portions there is not as indicated by the p-values > 0.05.
+For Paul Lake: The low, negative z-score associated with the test indiciates there is a slight negative trend amongst the data. The p-value > 0.05 indicates we should not accept the alternative hypothesis that there is a monotonic trend in the data (z= -0.35068, p-value = 0.7258). The Pettitt Test also has non-significant p-value indicating there is no significant change point to needed to be taken into account (p-value = 0.09624).
 
 5. Generate a graph that illustrates the TN concentrations over time, coloring by lake and adding vertical line(s) representing changepoint(s).
 
 ```{r}
+
+# Add vertical lines to the original graph to represent change points
+ggplot(NTLnutrients.surface, aes(x = sampledate, y = tn_ug, color = lakename)) + 
+  geom_point() +
+  scale_color_manual(values = c("#7fcdbb", "#253494")) +
+  geom_vline(xintercept = as.Date("1993-06-02"), linetype="dashed", color="#253494", size=1) +
+  geom_vline(xintercept = as.Date("1994-06-01"), linetype="dashed", color="#253494", size=1) +
+  labs(x = "Sample Date", y = "Total Nitrogen, micrograms", color = "Lake Name")
 
 ```
 
