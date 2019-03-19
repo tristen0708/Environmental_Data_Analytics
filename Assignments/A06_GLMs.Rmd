@@ -71,15 +71,6 @@ class(EPA.ecotox$Chemical.Name) #Factor
 levels(EPA.ecotox$Chemical.Name) #There are 9 chemicals in this column
 
 #4
-
-EPA.try <- 
-  EPA.ecotox %>%
-  group_by(Chemical.Name) %>%
-  filter()
-  
-  select(Chemical.Name, Pub..Year) %>%
-  
-    
 shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Acetamiprid"])
 shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Clothianidin"])
 shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Dinotefuran"])
@@ -89,35 +80,45 @@ shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nitenpyram"])
 shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nithiazine"])
 shapiro.test(EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Thiacloprid"])
 
-  
-  group_by(Chemical.Name) %>%  
-  summarise(shaptestC1 = shapiro.test(),
-    shaptestC2 = shapiro.test(),
-    shaptestC3 = shapiro.test(),
-    shaptestC4 = shapiro.test(),
-    shaptestC5 = shapiro.test(),
-    shaptestC6 = shapiro.test(),
-    shaptestC7 = shapiro.test(),
-    shaptestC8 = shapiro.test(),
-    shaptestC9 = shapiro.test()) 
+EPA_Ecotox_Frequency <-
+  ggplot(EPA.ecotox) +
+  geom_freqpoly(aes(x = Pub..Year, color = Chemical.Name),
+                stat="count") +
+  labs(x = "Publication Year", y = "Frequency", 
+                color = "Chemical Name")
+print(EPA_Ecotox_Frequency)
+qqnorm(EPA.ecotox$Pub..Year); qqline(EPA.ecotox$Pub..Year)
 
-#shapiro.test()
+#5 Bartlett test of homogeneity of variances
+bartlett.test(EPA.ecotox$Pub..Year ~ EPA.ecotox$Chemical.Name)
 
-#5
+#Bartlett's K-squared = 139.59, df = 8, p-value < 2.2e-16
 
 ```
 
 6. Based on your results, which test would you choose to run to answer your research question?
 
-> ANSWER: 
+> ANSWER: Anova GLM
 
 7. Run this test below. 
 
 8. Generate a boxplot representing the range of publication years for each chemical. Adjust your graph to make it pretty.
 ```{r}
 #7
+Chem <- aov(EPA.ecotox$Pub..Year ~ EPA.ecotox$Chemical.Name)
+summary(Chem)
+TukeyHSD(Chem)
 
 #8
+Chem_Box_plot <-
+  ggplot(EPA.ecotox, aes(x = Chemical.Name, y = Pub..Year, color = Chemical.Name)) +
+  geom_boxplot() +
+  labs(x= "Chemical Name", y="Publication Year", color = NULL) +
+  scale_y_continuous(expand = c(0, 0)) +
+  #scale_color_manual(values = c("#7fcdbb", "yellow", "#1d91c0", "black", "green", "violet", "pink", "#225ea8", "red")) +
+  scale_color_viridis(discrete = TRUE) +
+  theme(axis.text.x = element_text(angle = 45,  hjust = 1))
+print(Chem_Box_plot)
 
 ```
 

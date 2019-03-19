@@ -1,0 +1,882 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Assignment 8: Time Series Analysis},
+            pdfauthor={Tristen Townsend},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Assignment 8: Time Series Analysis}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Tristen Townsend}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\subsection{OVERVIEW}\label{overview}
+
+This exercise accompanies the lessons in Environmental Data Analytics
+(ENV872L) on time series analysis.
+
+\subsection{Directions}\label{directions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Change ``Student Name'' on line 3 (above) with your name.
+\item
+  Use the lesson as a guide. It contains code that can be modified to
+  complete the assignment.
+\item
+  Work through the steps, \textbf{creating code and output} that fulfill
+  each instruction.
+\item
+  Be sure to \textbf{answer the questions} in this assignment document.
+  Space for your answers is provided in this document and is indicated
+  by the ``\textgreater{}'' character. If you need a second paragraph be
+  sure to start the first line with ``\textgreater{}''. You should
+  notice that the answer is highlighted in green by RStudio.
+\item
+  When you have completed the assignment, \textbf{Knit} the text and
+  code into a single PDF file. You will need to have the correct
+  software installed to do this (see Software Installation Guide) Press
+  the \texttt{Knit} button in the RStudio scripting panel. This will
+  save the PDF output in your Assignments folder.
+\item
+  After Knitting, please submit the completed exercise (PDF file) to the
+  dropbox in Sakai. Please add your last name into the file name (e.g.,
+  ``Salk\_A08\_TimeSeries.pdf'') prior to submission.
+\end{enumerate}
+
+The completed exercise is due on Tuesday, 19 March, 2019 before class
+begins.
+
+\subsection{Brainstorm a project
+topic}\label{brainstorm-a-project-topic}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Spend 15 minutes brainstorming ideas for a project topic, and look for
+  a dataset if you are choosing your own rather than using a class
+  dataset. Remember your topic choices are due by the end of March, and
+  you should post your choice ASAP to the forum on Sakai.
+\end{enumerate}
+
+Question: Did you do this?
+
+\begin{quote}
+ANSWER: Yes, but I haven't decided my topic quite yet.
+\end{quote}
+
+\subsection{Set up your session}\label{set-up-your-session}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Set up your session. Upload the EPA air quality raw dataset for PM2.5
+  in 2018, and the processed NTL-LTER dataset for nutrients in Peter and
+  Paul lakes. Build a ggplot theme and set it as your default theme.
+  Make sure date variables are set to a date format.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.1.0     v purrr   0.2.5
+## v tibble  2.0.1     v dplyr   0.7.8
+## v tidyr   0.8.2     v stringr 1.3.1
+## v readr   1.3.1     v forcats 0.3.0
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tibble' was built under R version 3.5.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(forcats)}
+\KeywordTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     date
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(pander)}
+\KeywordTok{library}\NormalTok{(viridis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: viridisLite
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+\KeywordTok{library}\NormalTok{(colormap)}
+\KeywordTok{library}\NormalTok{(ggpubr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: magrittr
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'magrittr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:purrr':
+## 
+##     set_names
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:tidyr':
+## 
+##     extract
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(trend)}
+\KeywordTok{library}\NormalTok{(nlme)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'nlme'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     collapse
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lsmeans)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: emmeans
+\end{verbatim}
+
+\begin{verbatim}
+## The 'lsmeans' package is now basically a front end for 'emmeans'.
+## Users are encouraged to switch the rest of the way.
+## See help('transition') for more information, including how to
+## convert old 'lsmeans' objects and scripts to work with 'emmeans'.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(multcompView)}
+
+
+\CommentTok{#1}
+\KeywordTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "/Users/Tristen/OneDrive - Duke University/Spring 2019/Data Analytics/Environmental_Data_Analytics"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{ <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/EPAair_PM25_NC2018_raw.csv"}\NormalTok{)}
+\NormalTok{NTLnutrients <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv"}\NormalTok{)}
+
+\CommentTok{#2}
+\NormalTok{tristentheme <-}\StringTok{ }\KeywordTok{theme_classic}\NormalTok{(}\DataTypeTok{base_size =} \DecValTok{14}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{color =} \StringTok{"black"}\NormalTok{), }
+        \DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{)}
+
+\KeywordTok{class}\NormalTok{(EPAair.}\DecValTok{2018}\OperatorTok{$}\NormalTok{Date)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "factor"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{(NTLnutrients}\OperatorTok{$}\NormalTok{sampledate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "factor"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{EPAair.}\DecValTok{2018}\OperatorTok{$}\NormalTok{Date <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(EPAair.}\DecValTok{2018}\OperatorTok{$}\NormalTok{Date, }
+                                               \DataTypeTok{format =} \StringTok{"%m/%d/%y"}\NormalTok{)}
+\NormalTok{NTLnutrients}\OperatorTok{$}\NormalTok{sampledate <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(NTLnutrients}\OperatorTok{$}\NormalTok{sampledate, }
+                                               \DataTypeTok{format =} \StringTok{"%Y-%m-%d"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Run a hierarchical (mixed-effects)
+model}\label{run-a-hierarchical-mixed-effects-model}
+
+Research question: Do PM2.5 concentrations have a significant trend in
+2018?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Run a repeated measures ANOVA, with PM2.5 concentrations as the
+  response, Date as a fixed effect, and Site.Name as a random effect.
+  This will allow us to extrapolate PM2.5 concentrations across North
+  Carolina.
+\end{enumerate}
+
+3a. Illustrate PM2.5 concentrations by date. Do not split aesthetics by
+site.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{PMTest.mixed <-}\StringTok{ }\KeywordTok{lme}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
+\NormalTok{                     Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date,}
+                    \DataTypeTok{random =} \OperatorTok{~}\DecValTok{1}\OperatorTok{|}\NormalTok{Site.Name, }\DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(PMTest.mixed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed-effects model fit by REML
+##  Data: EPAair.2018 
+##        AIC      BIC    logLik
+##   40602.76 40630.51 -20297.38
+## 
+## Random effects:
+##  Formula: ~1 | Site.Name
+##         (Intercept) Residual
+## StdDev:    1.841425 3.457061
+## 
+## Fixed effects: Daily.Mean.PM2.5.Concentration ~ Date 
+##                 Value Std.Error   DF   t-value p-value
+## (Intercept) 20.141836  7.382570 7586  2.728296  0.0064
+## Date        -0.000742  0.000417 7586 -1.779991  0.0751
+##  Correlation: 
+##      (Intr)
+## Date -0.999
+## 
+## Standardized Within-Group Residuals:
+##        Min         Q1        Med         Q3        Max 
+## -3.4251256 -0.6846871 -0.1385351  0.5919707  7.9199389 
+## 
+## Number of Observations: 7611
+## Number of Groups: 24
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(EPAair.}\DecValTok{2018}\NormalTok{, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Date, }\DataTypeTok{y =}\NormalTok{ Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Date"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Daily Mean PM2.5 Concentration, microgram/m3"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A08_TimeSeries_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+3b. Insert the following line of code into your R chunk. This will
+eliminate duplicate measurements on single dates for each site. PM2.5 =
+PM2.5{[}order(PM2.5{[},`Date'{]},-PM2.5{[},`Site.ID'{]}),{]} PM2.5 =
+PM2.5{[}!duplicated(PM2.5\$Date),{]}
+
+3c. Determine the temporal autocorrelation in your model.
+
+3d. Run a mixed effects model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#PM2.5 = PM2.5[order(PM2.5[,'Date'],-PM2.5[,'Site.ID']),]}
+\CommentTok{#PM2.5 = PM2.5[!duplicated(PM2.5$Date),]}
+
+\NormalTok{PMTest.auto <-}\StringTok{ }\KeywordTok{lme}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
+\NormalTok{                    Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date, }
+                    \DataTypeTok{random =} \OperatorTok{~}\DecValTok{1}\OperatorTok{|}\NormalTok{Site.Name,  }\DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
+\NormalTok{PMTest.auto}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed-effects model fit by REML
+##   Data: EPAair.2018 
+##   Log-restricted-likelihood: -20297.38
+##   Fixed: Daily.Mean.PM2.5.Concentration ~ Date 
+## (Intercept)        Date 
+## 20.14183588 -0.00074241 
+## 
+## Random effects:
+##  Formula: ~1 | Site.Name
+##         (Intercept) Residual
+## StdDev:    1.841425 3.457061
+## 
+## Number of Observations: 7611
+## Number of Groups: 24
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ACF}\NormalTok{(PMTest.auto)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    lag          ACF
+## 1    0  1.000000000
+## 2    1  0.473017989
+## 3    2  0.143093030
+## 4    3  0.060500838
+## 5    4  0.061574447
+## 6    5  0.087756109
+## 7    6  0.061116723
+## 8    7  0.007595491
+## 9    8  0.025491472
+## 10   9  0.057872193
+## 11  10  0.095911195
+## 12  11  0.086519308
+## 13  12  0.041507759
+## 14  13  0.041091743
+## 15  14  0.008663124
+## 16  15 -0.012810524
+## 17  16 -0.016388970
+## 18  17 -0.023436707
+## 19  18  0.020967717
+## 20  19  0.032373855
+## 21  20 -0.046770645
+## 22  21 -0.086974675
+## 23  22 -0.045009633
+## 24  23  0.014507171
+## 25  24  0.046279402
+## 26  25  0.021031653
+## 27  26 -0.017185250
+## 28  27  0.008158717
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{PMTest..mixed <-}\StringTok{ }\KeywordTok{lme}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
+\NormalTok{                     Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date, }
+                     \DataTypeTok{random =} \OperatorTok{~}\DecValTok{1}\OperatorTok{|}\NormalTok{Site.Name, }
+\CommentTok{#                     correlation = }
+\CommentTok{#                     corAR1(form = ~ Date|Site.Name, value = 0.473),  }
+                     \DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(PMTest..mixed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed-effects model fit by REML
+##  Data: EPAair.2018 
+##        AIC      BIC    logLik
+##   40602.76 40630.51 -20297.38
+## 
+## Random effects:
+##  Formula: ~1 | Site.Name
+##         (Intercept) Residual
+## StdDev:    1.841425 3.457061
+## 
+## Fixed effects: Daily.Mean.PM2.5.Concentration ~ Date 
+##                 Value Std.Error   DF   t-value p-value
+## (Intercept) 20.141836  7.382570 7586  2.728296  0.0064
+## Date        -0.000742  0.000417 7586 -1.779991  0.0751
+##  Correlation: 
+##      (Intr)
+## Date -0.999
+## 
+## Standardized Within-Group Residuals:
+##        Min         Q1        Med         Q3        Max 
+## -3.4251256 -0.6846871 -0.1385351  0.5919707  7.9199389 
+## 
+## Number of Observations: 7611
+## Number of Groups: 24
+\end{verbatim}
+
+Is there a significant increasing or decreasing trend in PM2.5
+concentrations in 2018?
+
+\begin{quote}
+ANSWER: No.
+\end{quote}
+
+3e. Run a fixed effects model with Date as the only explanatory
+variable. Then test whether the mixed effects model is a better fit than
+the fixed effect model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{PMTest.fixed <-}\StringTok{ }\KeywordTok{gls}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
+\NormalTok{                    Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date, }
+                    \DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(PMTest.fixed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized least squares fit by REML
+##   Model: Daily.Mean.PM2.5.Concentration ~ Date 
+##   Data: EPAair.2018 
+##       AIC      BIC    logLik
+##   41493.9 41514.71 -20743.95
+## 
+## Coefficients:
+##                 Value Std.Error   t-value p-value
+## (Intercept) 18.382226  7.761784  2.368299  0.0179
+## Date        -0.000612  0.000439 -1.395100  0.1630
+## 
+##  Correlation: 
+##      (Intr)
+## Date -1    
+## 
+## Standardized residuals:
+##        Min         Q1        Med         Q3        Max 
+## -2.7977378 -0.6903373 -0.1103274  0.6016182  7.2066598 
+## 
+## Residual standard error: 3.689625 
+## Degrees of freedom: 7611 total; 7609 residual
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{anova}\NormalTok{(PMTest.mixed, PMTest.fixed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## PMTest.mixed     1  4 40602.76 40630.51 -20297.38                        
+## PMTest.fixed     2  3 41493.90 41514.71 -20743.95 1 vs 2 893.1307  <.0001
+\end{verbatim}
+
+Which model is better?
+
+\begin{quote}
+ANSWER: Mixed effect model is better as it has a lower AIC value.
+\end{quote}
+
+\subsection{Run a Mann-Kendall test}\label{run-a-mann-kendall-test}
+
+Research question: Is there a trend in total N surface concentrations in
+Peter and Paul lakes?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Duplicate the Mann-Kendall test we ran for total P in class, this time
+  with total N for both lakes. Make sure to run a test for changepoints
+  in the datasets (and run a second one if a second change point is
+  likely).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{NTLnutrients.surface <-}\StringTok{ }
+\StringTok{  }\NormalTok{NTLnutrients }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{lakeid, }\OperatorTok{-}\NormalTok{depth_id, }\OperatorTok{-}\NormalTok{comments) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(depth }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(tn_ug))}
+
+\CommentTok{# Initial visualization of data}
+\KeywordTok{ggplot}\NormalTok{(NTLnutrients.surface, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sampledate, }\DataTypeTok{y =}\NormalTok{ tn_ug, }\DataTypeTok{color =}\NormalTok{ lakename)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"#7fcdbb"}\NormalTok{, }\StringTok{"#253494"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A08_TimeSeries_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Split dataset by lake}
+\NormalTok{Peter.nutrients.surface <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(NTLnutrients.surface, lakename }\OperatorTok{==}\StringTok{ "Peter Lake"}\NormalTok{)}
+\NormalTok{Paul.nutrients.surface <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(NTLnutrients.surface, lakename }\OperatorTok{==}\StringTok{ "Paul Lake"}\NormalTok{)}
+
+\CommentTok{#Mann-Kendall test}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tn_ug
+## z = 7.2927, n = 98, p-value = 3.039e-13
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 2.377000e+03 1.061503e+05 5.001052e-01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Pettitt Test}
+\KeywordTok{pettitt.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Peter.nutrients.surface$tn_ug
+## U* = 1884, p-value = 3.744e-10
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              36
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run separate Mann-Kendall for each change point}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{37}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tn_ug[1:37]
+## z = 0.4316, n = 37, p-value = 0.666
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 3.400000e+01 5.846000e+03 5.105105e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tn_ug[38:98]
+## z = 2.931, n = 61, p-value = 0.003379
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 4.720000e+02 2.582333e+04 2.579235e-01
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Is there a second change point?}
+\KeywordTok{pettitt.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Peter.nutrients.surface$tp_ug[38:98]
+## U* = 378, p-value = 0.04866
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              53
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run another Mann-Kendall for the second change point}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{37}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tn_ug[1:37]
+## z = 0.4316, n = 37, p-value = 0.666
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## 3.400000e+01 5.846000e+03 5.105105e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{54}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tp_ug[38:54]
+## z = -4.4076, n = 17, p-value = 1.045e-05
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## -108.0000000  589.3333333   -0.7941176
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{55}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Peter.nutrients.surface$tp_ug[55:98]
+## z = -1.2643, n = 44, p-value = 0.2061
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##            S         varS          tau 
+## -126.0000000 9775.3333333   -0.1331924
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run the same test for Paul Lake}
+\KeywordTok{mk.test}\NormalTok{(Paul.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Mann-Kendall trend test
+## 
+## data:  Paul.nutrients.surface$tn_ug
+## z = -0.35068, n = 99, p-value = 0.7258
+## alternative hypothesis: true S is not equal to 0
+## sample estimates:
+##             S          varS           tau 
+## -1.170000e+02  1.094170e+05 -2.411874e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pettitt.test}\NormalTok{(Paul.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pettitt's test for single change-point detection
+## 
+## data:  Paul.nutrients.surface$tn_ug
+## U* = 704, p-value = 0.09624
+## alternative hypothesis: two.sided
+## sample estimates:
+## probable change point at time K 
+##                              16
+\end{verbatim}
+
+What are the results of this test?
+
+\begin{quote}
+ANSWER: For Peter Lake: The Pettitt Test showed two change points
+needing to be taken into account. After doing so, the separate
+Mann-Kendall test results show negative z-scores indiciating there is a
+negative trend amongst the data. For only the middle portion of the data
+is there a monotonic trend, and for the beginning and end portions there
+is not as indicated by the p-values \textgreater{} 0.05. For Paul Lake:
+The low, negative z-score associated with the test indiciates there is a
+slight negative trend amongst the data. The p-value \textgreater{} 0.05
+indicates we should not accept the alternative hypothesis that there is
+a monotonic trend in the data (z= -0.35068, p-value = 0.7258). The
+Pettitt Test also has non-significant p-value indicating there is no
+significant change point to needed to be taken into account (p-value =
+0.09624).
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Generate a graph that illustrates the TN concentrations over time,
+  coloring by lake and adding vertical line(s) representing
+  changepoint(s).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Add vertical lines to the original graph to represent change points}
+\KeywordTok{ggplot}\NormalTok{(NTLnutrients.surface, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sampledate, }\DataTypeTok{y =}\NormalTok{ tn_ug, }\DataTypeTok{color =}\NormalTok{ lakename)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"#7fcdbb"}\NormalTok{, }\StringTok{"#253494"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \KeywordTok{as.Date}\NormalTok{(}\StringTok{"1993-06-02"}\NormalTok{), }\DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{color=}\StringTok{"#253494"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \KeywordTok{as.Date}\NormalTok{(}\StringTok{"1994-06-01"}\NormalTok{), }\DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{color=}\StringTok{"#253494"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Sample Date"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Total Nitrogen, micrograms"}\NormalTok{, }\DataTypeTok{color =} \StringTok{"Lake Name"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A08_TimeSeries_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+
+\end{document}
