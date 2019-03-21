@@ -75,7 +75,9 @@ This is more of a proof of concept than a useful map. We can sort of visualize s
 See https://rdrr.io/cran/mapview/man/mapviewOptions.html for more info.
 ```{r Plot EPA locations with `mapview`}
 #(Install and) Load the mapView package
-#install.packages('mapview')
+install.packages('e1071')
+library(e1071)
+install.packages('mapview')
 library(mapview)
 
 #Set the available map backgrounds
@@ -92,7 +94,7 @@ myMap = mapview(EPAair_PM_avg,
 myMap
 
 #Save the map (if you want, and if "phantomJS" is installed)
-#mapshot(myMap, file='EPA_SiteMap.png')  #Save to a PNG file
+mapshot(myMap, file='EPA_SiteMap.png')  #Save to a PNG file
 #mapshot(myMap, file='EPA_SiteMap.html') #Save to an HTML file
 ```
 
@@ -103,7 +105,7 @@ Much better, no? And interactive! But while MapView loosely follows a familiar g
 See http://rstudio.github.io/leaflet/ for more info
 ```{r Plot with leaflet}
 #Import libraries 
-#install.packages('leaflet')
+install.packages('leaflet')
 library(leaflet)
 
 #Create the map and add Tiles
@@ -145,7 +147,7 @@ Let's explore a few examples to familiarize ourselves with the `sf` package.
 First, let's convert our EPA dataframe to a simple features ("sf") dataframe and explore what's different:
 ```{r Create simple features from lat/lng fields}
 #Import the sf library
-#install.packages('sf')
+install.packages('sf')
 library(sf)
 
 #Convert the dataset to a spatially enabled "sf" data frame
@@ -316,15 +318,18 @@ mapView(counties_sf)
 
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
-huc8_sf <-   
+huc8_sf <-  st_read('./Data/Spatial/huc_250k_nc.shp')
 
 #Check the CRS
-
+st_crs(huc8_sf)
 
 #Exaimine the column names
-
+names(huc8_sf)
+plot(huc8_sf$SUB)
 
 #View the data as a map
+plot(huc8_sf['SUB'], 
+     graticule = st_crs(huc8_sf), axes = TRUE) # Add a graticule
 
 ```
 
@@ -332,8 +337,10 @@ huc8_sf <-
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-upperNeuse_sf <-  
-  
+upperNeuse_sf <-  st_read('./Data/Spatial/huc_250k_nc.shp') %>%
+  filter(HUC_NAME == 'Upper Neuse')
+
+mapview(upperNeuse_sf)
 
 ```
 
@@ -342,7 +349,7 @@ upperNeuse_sf <-
 ```{r Dissolve all counties into a single feature}
 #Aggregate the data using group_by and summarize, just as you would a non-spatial dataframe
 state_sf <- counties_sf %>% 
-  group_by('STATEFP') %>% 
+  group_by(STATEFP) %>%  #We don't actually need this line since we just have NC data
   summarize(ALAND = sum(ALAND))
 
 #View the data
@@ -356,7 +363,9 @@ mapview(state_sf2)
 > Now you try it: Aggregate the HUC data on the SUB attribute, computing the sum of the "AREA" field and view the result. 
 
 ```{r Aggregate the HUC data on an attribute, saving as huc2_sf}
-huc2_sf <- 
+huc2_sf <- huc8_sf %>%
+  group_by(SUB) %>%
+  summarize(AREA = sum(AREA))
   
   
 mapview(huc2_sf)
@@ -458,10 +467,13 @@ mapview(huc2_UTM_nc)
 > Exercise: Try subsetting the huc2_UTM dataset for SUB = 0302, then clipping counties with that subset.
 
 ```{r EXERCISE: Clip the counties dataset with the border of HUC 0302}
-huc0302_counties <- 
+huc0302_counties <- huc2_UTM %>%
+  filter(SUB == "0302") 
+  
+huc0302_int <- st_intersection(counties_sf_utm, huc0302_counties)
   
 #Map the product, showing values by land area
-mapview(huc0302_counties['ALAND'])
+mapview(huc0302_int['ALAND'], legend=FALSE)
 ```
 
 
