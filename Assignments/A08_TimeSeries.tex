@@ -447,9 +447,11 @@ PM2.5{[}!duplicated(PM2.5\$Date),{]}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{#PM2.5 = PM2.5[order(PM2.5[,'Date'],-PM2.5[,'Site.ID']),]}
-\CommentTok{#PM2.5 = PM2.5[!duplicated(PM2.5$Date),]}
+\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{ =}\StringTok{ }
+\StringTok{  }\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{[}\KeywordTok{order}\NormalTok{(EPAair.}\DecValTok{2018}\NormalTok{[,}\StringTok{'Date'}\NormalTok{],}\OperatorTok{-}\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{[,}\StringTok{'Site.ID'}\NormalTok{]),]}
+\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{ =}\StringTok{ }\NormalTok{EPAair.}\DecValTok{2018}\NormalTok{[}\OperatorTok{!}\KeywordTok{duplicated}\NormalTok{(EPAair.}\DecValTok{2018}\OperatorTok{$}\NormalTok{Date),]}
 
+\CommentTok{#autocorrelation}
 \NormalTok{PMTest.auto <-}\StringTok{ }\KeywordTok{lme}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
 \NormalTok{                    Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date, }
                     \DataTypeTok{random =} \OperatorTok{~}\DecValTok{1}\OperatorTok{|}\NormalTok{Site.Name,  }\DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
@@ -460,18 +462,18 @@ PM2.5{[}!duplicated(PM2.5\$Date),{]}
 \begin{verbatim}
 ## Linear mixed-effects model fit by REML
 ##   Data: EPAair.2018 
-##   Log-restricted-likelihood: -20297.38
+##   Log-restricted-likelihood: -928.6076
 ##   Fixed: Daily.Mean.PM2.5.Concentration ~ Date 
-## (Intercept)        Date 
-## 20.14183588 -0.00074241 
+##  (Intercept)         Date 
+## 90.465022634 -0.004727976 
 ## 
 ## Random effects:
 ##  Formula: ~1 | Site.Name
 ##         (Intercept) Residual
-## StdDev:    1.841425 3.457061
+## StdDev:    1.650184 3.559209
 ## 
-## Number of Observations: 7611
-## Number of Groups: 24
+## Number of Observations: 343
+## Number of Groups: 3
 \end{verbatim}
 
 \begin{Shaded}
@@ -483,33 +485,31 @@ PM2.5{[}!duplicated(PM2.5\$Date),{]}
 \begin{verbatim}
 ##    lag          ACF
 ## 1    0  1.000000000
-## 2    1  0.473017989
-## 3    2  0.143093030
-## 4    3  0.060500838
-## 5    4  0.061574447
-## 6    5  0.087756109
-## 7    6  0.061116723
-## 8    7  0.007595491
-## 9    8  0.025491472
-## 10   9  0.057872193
-## 11  10  0.095911195
-## 12  11  0.086519308
-## 13  12  0.041507759
-## 14  13  0.041091743
-## 15  14  0.008663124
-## 16  15 -0.012810524
-## 17  16 -0.016388970
-## 18  17 -0.023436707
-## 19  18  0.020967717
-## 20  19  0.032373855
-## 21  20 -0.046770645
-## 22  21 -0.086974675
-## 23  22 -0.045009633
-## 24  23  0.014507171
-## 25  24  0.046279402
-## 26  25  0.021031653
-## 27  26 -0.017185250
-## 28  27  0.008158717
+## 2    1  0.513829909
+## 3    2  0.194512680
+## 4    3  0.117925187
+## 5    4  0.126462863
+## 6    5  0.100699787
+## 7    6  0.058215891
+## 8    7 -0.053090104
+## 9    8  0.017671857
+## 10   9  0.012177847
+## 11  10 -0.003699721
+## 12  11 -0.020305291
+## 13  12 -0.044621086
+## 14  13 -0.055602646
+## 15  14 -0.065787345
+## 16  15 -0.123987593
+## 17  16 -0.055414056
+## 18  17  0.002911218
+## 19  18  0.025133456
+## 20  19 -0.015306468
+## 21  20 -0.143472007
+## 22  21 -0.155495492
+## 23  22 -0.060369985
+## 24  23  0.003954231
+## 25  24  0.042295682
+## 26  25  0.001320007
 \end{verbatim}
 
 \begin{Shaded}
@@ -517,8 +517,8 @@ PM2.5{[}!duplicated(PM2.5\$Date),{]}
 \NormalTok{PMTest..mixed <-}\StringTok{ }\KeywordTok{lme}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ EPAair.}\DecValTok{2018}\NormalTok{,}
 \NormalTok{                     Daily.Mean.PM2.}\FloatTok{5.}\NormalTok{Concentration }\OperatorTok{~}\StringTok{ }\NormalTok{Date, }
                      \DataTypeTok{random =} \OperatorTok{~}\DecValTok{1}\OperatorTok{|}\NormalTok{Site.Name, }
-\CommentTok{#                     correlation = }
-\CommentTok{#                     corAR1(form = ~ Date|Site.Name, value = 0.473),  }
+                     \DataTypeTok{correlation =} 
+                     \KeywordTok{corAR1}\NormalTok{(}\DataTypeTok{form =} \OperatorTok{~}\StringTok{ }\NormalTok{Date}\OperatorTok{|}\NormalTok{Site.Name, }\DataTypeTok{value =} \FloatTok{0.514}\NormalTok{),  }
                      \DataTypeTok{method =} \StringTok{"REML"}\NormalTok{)}
 \KeywordTok{summary}\NormalTok{(PMTest..mixed)}
 \end{Highlighting}
@@ -527,35 +527,42 @@ PM2.5{[}!duplicated(PM2.5\$Date),{]}
 \begin{verbatim}
 ## Linear mixed-effects model fit by REML
 ##  Data: EPAair.2018 
-##        AIC      BIC    logLik
-##   40602.76 40630.51 -20297.38
+##        AIC      BIC   logLik
+##   1756.622 1775.781 -873.311
 ## 
 ## Random effects:
 ##  Formula: ~1 | Site.Name
 ##         (Intercept) Residual
-## StdDev:    1.841425 3.457061
+## StdDev: 0.001028133 3.597269
 ## 
+## Correlation Structure: ARMA(1,0)
+##  Formula: ~Date | Site.Name 
+##  Parameter estimate(s):
+##      Phi1 
+## 0.5384349 
 ## Fixed effects: Daily.Mean.PM2.5.Concentration ~ Date 
-##                 Value Std.Error   DF   t-value p-value
-## (Intercept) 20.141836  7.382570 7586  2.728296  0.0064
-## Date        -0.000742  0.000417 7586 -1.779991  0.0751
+##                Value Std.Error  DF   t-value p-value
+## (Intercept) 83.14801  60.63585 339  1.371268  0.1712
+## Date        -0.00426   0.00342 339 -1.244145  0.2143
 ##  Correlation: 
 ##      (Intr)
-## Date -0.999
+## Date -1    
 ## 
 ## Standardized Within-Group Residuals:
 ##        Min         Q1        Med         Q3        Max 
-## -3.4251256 -0.6846871 -0.1385351  0.5919707  7.9199389 
+## -2.3220745 -0.6187194 -0.1116751  0.6164257  3.4192603 
 ## 
-## Number of Observations: 7611
-## Number of Groups: 24
+## Number of Observations: 343
+## Number of Groups: 3
 \end{verbatim}
 
 Is there a significant increasing or decreasing trend in PM2.5
 concentrations in 2018?
 
 \begin{quote}
-ANSWER: No.
+ANSWER: No, the p-value \textgreater{} 0.05 thus indicating no reason to
+reject the null hypothesis that there is no trend in PM2.5 concentations
+in 2018.
 \end{quote}
 
 3e. Run a fixed effects model with Date as the only explanatory
@@ -575,13 +582,13 @@ the fixed effect model.
 ## Generalized least squares fit by REML
 ##   Model: Daily.Mean.PM2.5.Concentration ~ Date 
 ##   Data: EPAair.2018 
-##       AIC      BIC    logLik
-##   41493.9 41514.71 -20743.95
+##        AIC      BIC    logLik
+##   1865.202 1876.698 -929.6011
 ## 
 ## Coefficients:
-##                 Value Std.Error   t-value p-value
-## (Intercept) 18.382226  7.761784  2.368299  0.0179
-## Date        -0.000612  0.000439 -1.395100  0.1630
+##                Value Std.Error   t-value p-value
+## (Intercept) 98.57796  34.60285  2.848840  0.0047
+## Date        -0.00513   0.00195 -2.624999  0.0091
 ## 
 ##  Correlation: 
 ##      (Intr)
@@ -589,22 +596,22 @@ the fixed effect model.
 ## 
 ## Standardized residuals:
 ##        Min         Q1        Med         Q3        Max 
-## -2.7977378 -0.6903373 -0.1103274  0.6016182  7.2066598 
+## -2.3531000 -0.6348100 -0.1153454  0.6383004  3.4063068 
 ## 
-## Residual standard error: 3.689625 
-## Degrees of freedom: 7611 total; 7609 residual
+## Residual standard error: 3.584321 
+## Degrees of freedom: 343 total; 341 residual
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{anova}\NormalTok{(PMTest.mixed, PMTest.fixed)}
+\KeywordTok{anova}\NormalTok{(PMTest..mixed, PMTest.fixed)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##              Model df      AIC      BIC    logLik   Test  L.Ratio p-value
-## PMTest.mixed     1  4 40602.76 40630.51 -20297.38                        
-## PMTest.fixed     2  3 41493.90 41514.71 -20743.95 1 vs 2 893.1307  <.0001
+##               Model df      AIC      BIC    logLik   Test  L.Ratio p-value
+## PMTest..mixed     1  5 1756.622 1775.781 -873.3110                        
+## PMTest.fixed      2  3 1865.202 1876.698 -929.6011 1 vs 2 112.5802  <.0001
 \end{verbatim}
 
 Which model is better?
@@ -691,7 +698,7 @@ Peter and Paul lakes?
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Run separate Mann-Kendall for each change point}
-\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{37}\NormalTok{])}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{35}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -699,17 +706,17 @@ Peter and Paul lakes?
 ## 
 ##  Mann-Kendall trend test
 ## 
-## data:  Peter.nutrients.surface$tn_ug[1:37]
-## z = 0.4316, n = 37, p-value = 0.666
+## data:  Peter.nutrients.surface$tn_ug[1:35]
+## z = -0.22722, n = 35, p-value = 0.8203
 ## alternative hypothesis: true S is not equal to 0
 ## sample estimates:
-##            S         varS          tau 
-## 3.400000e+01 5.846000e+03 5.105105e-02
+##             S          varS           tau 
+##  -17.00000000 4958.33333333   -0.02857143
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{36}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -717,18 +724,18 @@ Peter and Paul lakes?
 ## 
 ##  Mann-Kendall trend test
 ## 
-## data:  Peter.nutrients.surface$tn_ug[38:98]
-## z = 2.931, n = 61, p-value = 0.003379
+## data:  Peter.nutrients.surface$tn_ug[36:98]
+## z = 3.1909, n = 63, p-value = 0.001418
 ## alternative hypothesis: true S is not equal to 0
 ## sample estimates:
 ##            S         varS          tau 
-## 4.720000e+02 2.582333e+04 2.579235e-01
+## 5.390000e+02 2.842700e+04 2.759857e-01
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Is there a second change point?}
-\KeywordTok{pettitt.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\KeywordTok{pettitt.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{36}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -736,18 +743,18 @@ Peter and Paul lakes?
 ## 
 ##  Pettitt's test for single change-point detection
 ## 
-## data:  Peter.nutrients.surface$tp_ug[38:98]
-## U* = 378, p-value = 0.04866
+## data:  Peter.nutrients.surface$tn_ug[36:98]
+## U* = 560, p-value = 0.001213
 ## alternative hypothesis: two.sided
 ## sample estimates:
 ## probable change point at time K 
-##                              53
+##                              21
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Run another Mann-Kendall for the second change point}
-\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{37}\NormalTok{])}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{1}\OperatorTok{:}\DecValTok{35}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -755,17 +762,17 @@ Peter and Paul lakes?
 ## 
 ##  Mann-Kendall trend test
 ## 
-## data:  Peter.nutrients.surface$tn_ug[1:37]
-## z = 0.4316, n = 37, p-value = 0.666
+## data:  Peter.nutrients.surface$tn_ug[1:35]
+## z = -0.22722, n = 35, p-value = 0.8203
 ## alternative hypothesis: true S is not equal to 0
 ## sample estimates:
-##            S         varS          tau 
-## 3.400000e+01 5.846000e+03 5.105105e-02
+##             S          varS           tau 
+##  -17.00000000 4958.33333333   -0.02857143
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{38}\OperatorTok{:}\DecValTok{54}\NormalTok{])}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{36}\OperatorTok{:}\DecValTok{56}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -773,17 +780,17 @@ Peter and Paul lakes?
 ## 
 ##  Mann-Kendall trend test
 ## 
-## data:  Peter.nutrients.surface$tp_ug[38:54]
-## z = -4.4076, n = 17, p-value = 1.045e-05
+## data:  Peter.nutrients.surface$tn_ug[36:56]
+## z = -1.0569, n = 21, p-value = 0.2906
 ## alternative hypothesis: true S is not equal to 0
 ## sample estimates:
 ##            S         varS          tau 
-## -108.0000000  589.3333333   -0.7941176
+##  -36.0000000 1096.6666667   -0.1714286
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tp_ug[}\DecValTok{55}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
+\KeywordTok{mk.test}\NormalTok{(Peter.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug[}\DecValTok{57}\OperatorTok{:}\DecValTok{98}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
@@ -791,12 +798,12 @@ Peter and Paul lakes?
 ## 
 ##  Mann-Kendall trend test
 ## 
-## data:  Peter.nutrients.surface$tp_ug[55:98]
-## z = -1.2643, n = 44, p-value = 0.2061
+## data:  Peter.nutrients.surface$tn_ug[57:98]
+## z = 0.15172, n = 42, p-value = 0.8794
 ## alternative hypothesis: true S is not equal to 0
 ## sample estimates:
 ##            S         varS          tau 
-## -126.0000000 9775.3333333   -0.1331924
+##   15.0000000 8514.3333333    0.0174216
 \end{verbatim}
 
 \begin{Shaded}
@@ -820,7 +827,7 @@ Peter and Paul lakes?
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{pettitt.test}\NormalTok{(Paul.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug) }
+\KeywordTok{pettitt.test}\NormalTok{(Paul.nutrients.surface}\OperatorTok{$}\NormalTok{tn_ug) }\CommentTok{#two change points}
 \end{Highlighting}
 \end{Shaded}
 
@@ -871,7 +878,7 @@ significant change point to needed to be taken into account (p-value =
 \StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
 \StringTok{  }\KeywordTok{scale_color_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"#7fcdbb"}\NormalTok{, }\StringTok{"#253494"}\NormalTok{)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \KeywordTok{as.Date}\NormalTok{(}\StringTok{"1993-06-02"}\NormalTok{), }\DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{color=}\StringTok{"#253494"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \KeywordTok{as.Date}\NormalTok{(}\StringTok{"1994-06-01"}\NormalTok{), }\DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{color=}\StringTok{"#253494"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{xintercept =} \KeywordTok{as.Date}\NormalTok{(}\StringTok{"1994-06-29"}\NormalTok{), }\DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{color=}\StringTok{"#253494"}\NormalTok{, }\DataTypeTok{size=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Sample Date"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Total Nitrogen, micrograms"}\NormalTok{, }\DataTypeTok{color =} \StringTok{"Lake Name"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}

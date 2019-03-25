@@ -105,9 +105,11 @@ PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
 
 ```{r}
 
-#PM2.5 = PM2.5[order(PM2.5[,'Date'],-PM2.5[,'Site.ID']),]
-#PM2.5 = PM2.5[!duplicated(PM2.5$Date),]
+EPAair.2018 = 
+  EPAair.2018[order(EPAair.2018[,'Date'],-EPAair.2018[,'Site.ID']),]
+EPAair.2018 = EPAair.2018[!duplicated(EPAair.2018$Date),]
 
+#autocorrelation
 PMTest.auto <- lme(data = EPAair.2018,
                     Daily.Mean.PM2.5.Concentration ~ Date, 
                     random = ~1|Site.Name,  method = "REML")
@@ -117,8 +119,8 @@ ACF(PMTest.auto)
 PMTest..mixed <- lme(data = EPAair.2018,
                      Daily.Mean.PM2.5.Concentration ~ Date, 
                      random = ~1|Site.Name, 
-#                     correlation = 
-#                     corAR1(form = ~ Date|Site.Name, value = 0.473),  
+                     correlation = 
+                     corAR1(form = ~ Date|Site.Name, value = 0.514),  
                      method = "REML")
 summary(PMTest..mixed)
 
@@ -127,7 +129,7 @@ summary(PMTest..mixed)
 
 Is there a significant increasing or decreasing trend in PM2.5 concentrations in 2018? 
 
-> ANSWER: No.
+> ANSWER: No, the p-value > 0.05 thus indicating no reason to reject the null hypothesis that there is no trend in PM2.5 concentations in 2018.
 
 3e. Run a fixed effects model with Date as the only explanatory variable. Then test whether the mixed effects model is a better fit than the fixed effect model. 
 
@@ -138,7 +140,7 @@ PMTest.fixed <- gls(data = EPAair.2018,
                     method = "REML")
 summary(PMTest.fixed)
 
-anova(PMTest.mixed, PMTest.fixed)
+anova(PMTest..mixed, PMTest.fixed)
 
 ```
 
@@ -178,20 +180,20 @@ mk.test(Peter.nutrients.surface$tn_ug)
 pettitt.test(Peter.nutrients.surface$tn_ug)
 
 # Run separate Mann-Kendall for each change point
-mk.test(Peter.nutrients.surface$tn_ug[1:37])
-mk.test(Peter.nutrients.surface$tn_ug[38:98])
+mk.test(Peter.nutrients.surface$tn_ug[1:35])
+mk.test(Peter.nutrients.surface$tn_ug[36:98])
 
 # Is there a second change point?
-pettitt.test(Peter.nutrients.surface$tp_ug[38:98])
+pettitt.test(Peter.nutrients.surface$tn_ug[36:98])
 
 # Run another Mann-Kendall for the second change point
-mk.test(Peter.nutrients.surface$tn_ug[1:37])
-mk.test(Peter.nutrients.surface$tp_ug[38:54])
-mk.test(Peter.nutrients.surface$tp_ug[55:98])
+mk.test(Peter.nutrients.surface$tn_ug[1:35])
+mk.test(Peter.nutrients.surface$tn_ug[36:56])
+mk.test(Peter.nutrients.surface$tn_ug[57:98])
 
 # Run the same test for Paul Lake
 mk.test(Paul.nutrients.surface$tn_ug)
-pettitt.test(Paul.nutrients.surface$tn_ug) 
+pettitt.test(Paul.nutrients.surface$tn_ug) #two change points
 ```
 
 
@@ -209,7 +211,7 @@ ggplot(NTLnutrients.surface, aes(x = sampledate, y = tn_ug, color = lakename)) +
   geom_point() +
   scale_color_manual(values = c("#7fcdbb", "#253494")) +
   geom_vline(xintercept = as.Date("1993-06-02"), linetype="dashed", color="#253494", size=1) +
-  geom_vline(xintercept = as.Date("1994-06-01"), linetype="dashed", color="#253494", size=1) +
+  geom_vline(xintercept = as.Date("1994-06-29"), linetype="dashed", color="#253494", size=1) +
   labs(x = "Sample Date", y = "Total Nitrogen, micrograms", color = "Lake Name")
 
 ```
