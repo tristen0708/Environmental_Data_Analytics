@@ -31,6 +31,8 @@ You should notice that the answer is highlighted in green by RStudio.
 * Import: tidyverse, sf, and leaflet
 ```{r Prepare workspace}
 
+
+
 ```
 
 ### 2. Read filtered county features into an sf dataframe and plot
