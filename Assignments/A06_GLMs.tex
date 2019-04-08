@@ -1,0 +1,1006 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Assignment 6: Generalized Linear Models},
+            pdfauthor={Tristen Townsend},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Assignment 6: Generalized Linear Models}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Tristen Townsend}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\subsection{OVERVIEW}\label{overview}
+
+This exercise accompanies the lessons in Environmental Data Analytics
+(ENV872L) on generalized linear models.
+
+\subsection{Directions}\label{directions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Change ``Student Name'' on line 3 (above) with your name.
+\item
+  Use the lesson as a guide. It contains code that can be modified to
+  complete the assignment.
+\item
+  Work through the steps, \textbf{creating code and output} that fulfill
+  each instruction.
+\item
+  Be sure to \textbf{answer the questions} in this assignment document.
+  Space for your answers is provided in this document and is indicated
+  by the ``\textgreater{}'' character. If you need a second paragraph be
+  sure to start the first line with ``\textgreater{}''. You should
+  notice that the answer is highlighted in green by RStudio.
+\item
+  When you have completed the assignment, \textbf{Knit} the text and
+  code into a single PDF file. You will need to have the correct
+  software installed to do this (see Software Installation Guide) Press
+  the \texttt{Knit} button in the RStudio scripting panel. This will
+  save the PDF output in your Assignments folder.
+\item
+  After Knitting, please submit the completed exercise (PDF file) to the
+  dropbox in Sakai. Please add your last name into the file name (e.g.,
+  ``Salk\_A06\_GLMs.pdf'') prior to submission.
+\end{enumerate}
+
+The completed exercise is due on Tuesday, 26 February, 2019 before class
+begins.
+
+\subsection{Set up your session}\label{set-up-your-session}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Set up your session. Upload the EPA Ecotox dataset for Neonicotinoids
+  and the NTL-LTER raw data file for chemistry/physics.
+\item
+  Build a ggplot theme and set it as your default theme.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ------------------------------------ tidyverse 1.2.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.1.0     v purrr   0.2.5
+## v tibble  2.0.1     v dplyr   0.7.8
+## v tidyr   0.8.2     v stringr 1.3.1
+## v readr   1.3.1     v forcats 0.3.0
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'tibble' was built under R version 3.5.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts --------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(forcats)}
+\KeywordTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     date
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(pander)}
+\KeywordTok{library}\NormalTok{(viridis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: viridisLite
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+\KeywordTok{library}\NormalTok{(colormap)}
+\KeywordTok{library}\NormalTok{(ggpubr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: magrittr
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'magrittr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:purrr':
+## 
+##     set_names
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:tidyr':
+## 
+##     extract
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#1}
+\KeywordTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "/Users/Tristen/OneDrive - Duke University/Spring 2019/Data Analytics/Environmental_Data_Analytics"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{NTL <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"}\NormalTok{)}
+\NormalTok{EPA.ecotox <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/ECOTOX_Neonicotinoids_Mortality_raw.csv"}\NormalTok{)}
+
+\CommentTok{#2}
+\NormalTok{tristentheme <-}\StringTok{ }\KeywordTok{theme_classic}\NormalTok{(}\DataTypeTok{base_size =} \DecValTok{14}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{color =} \StringTok{"black"}\NormalTok{), }
+        \DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Neonicotinoids test}\label{neonicotinoids-test}
+
+Research question: Were studies on various neonicotinoid chemicals
+conducted in different years?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  Generate a line of code to determine how many different chemicals are
+  listed in the Chemical.Name column.
+\item
+  Are the publication years associated with each chemical
+  well-approximated by a normal distribution? Run the appropriate test
+  and also generate a frequency polygon to illustrate the distribution
+  of counts for each year, divided by chemical name. Bonus points if you
+  can generate the results of your test from a pipe function. No need to
+  make this graph pretty.
+\item
+  Is there equal variance among the publication years for each chemical?
+  Hint: var.test is not the correct function.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#3}
+\KeywordTok{class}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name) }\CommentTok{#Factor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "factor"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{levels}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name) }\CommentTok{#There are 9 chemicals in this column}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Acetamiprid"  "Clothianidin" "Dinotefuran"  "Imidacloprid"
+## [5] "Imidaclothiz" "Nitenpyram"   "Nithiazine"   "Thiacloprid" 
+## [9] "Thiamethoxam"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#4}
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Acetamiprid"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Acetamiprid"]
+## W = 0.90191, p-value = 5.706e-08
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Clothianidin"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Clothianidin"]
+## W = 0.69577, p-value = 4.287e-11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Dinotefuran"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Dinotefuran"]
+## W = 0.82848, p-value = 8.83e-07
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Imidacloprid"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Imidacloprid"]
+## W = 0.88178, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Imidaclothiz"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Imidaclothiz"]
+## W = 0.68429, p-value = 0.00093
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Nitenpyram"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nitenpyram"]
+## W = 0.79592, p-value = 0.0005686
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Nithiazine"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Nithiazine"]
+## W = 0.75938, p-value = 0.0001235
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{shapiro.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year[EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name }\OperatorTok{==}\StringTok{ "Thiacloprid"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  EPA.ecotox$Pub..Year[EPA.ecotox$Chemical.Name == "Thiacloprid"]
+## W = 0.7669, p-value = 1.118e-11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{EPA_Ecotox_Frequency <-}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(EPA.ecotox) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_freqpoly}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Pub..Year, }\DataTypeTok{color =}\NormalTok{ Chemical.Name),}
+                \DataTypeTok{stat=}\StringTok{"count"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Publication Year"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Frequency"}\NormalTok{, }
+                \DataTypeTok{color =} \StringTok{"Chemical Name"}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(EPA_Ecotox_Frequency)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A06_GLMs_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{qqnorm}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year); }\KeywordTok{qqline}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A06_GLMs_files/figure-latex/unnamed-chunk-2-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#5 Bartlett test of homogeneity of variances}
+\KeywordTok{bartlett.test}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year }\OperatorTok{~}\StringTok{ }\NormalTok{EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Bartlett test of homogeneity of variances
+## 
+## data:  EPA.ecotox$Pub..Year by EPA.ecotox$Chemical.Name
+## Bartlett's K-squared = 139.59, df = 8, p-value < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Bartlett's K-squared = 139.59, df = 8, p-value < 2.2e-16}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Based on your results, which test would you choose to run to answer
+  your research question?
+\end{enumerate}
+
+\begin{quote}
+ANSWER: Anova GLM
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\item
+  Run this test below.
+\item
+  Generate a boxplot representing the range of publication years for
+  each chemical. Adjust your graph to make it pretty.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#7}
+\NormalTok{Chem <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(EPA.ecotox}\OperatorTok{$}\NormalTok{Pub..Year }\OperatorTok{~}\StringTok{ }\NormalTok{EPA.ecotox}\OperatorTok{$}\NormalTok{Chemical.Name)}
+\KeywordTok{summary}\NormalTok{(Chem)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                            Df Sum Sq Mean Sq F value Pr(>F)    
+## EPA.ecotox$Chemical.Name    8  13365  1670.7   33.21 <2e-16 ***
+## Residuals                1274  64093    50.3                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{TukeyHSD}\NormalTok{(Chem)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = EPA.ecotox$Pub..Year ~ EPA.ecotox$Chemical.Name)
+## 
+## $`EPA.ecotox$Chemical.Name`
+##                                  diff          lwr           upr     p adj
+## Clothianidin-Acetamiprid    2.0478935  -1.13556203   5.231348994 0.5444735
+## Dinotefuran-Acetamiprid    -3.4333250  -6.86887521   0.002225165 0.0502982
+## Imidacloprid-Acetamiprid    3.1181443   1.05175043   5.184538190 0.0001059
+## Imidaclothiz-Acetamiprid    6.4517974  -1.13341497  14.037009746 0.1700689
+## Nitenpyram-Acetamiprid      7.7216387   2.55455876  12.888718547 0.0001312
+## Nithiazine-Acetamiprid    -17.6290107 -22.69334307 -12.564678323 0.0000000
+## Thiacloprid-Acetamiprid     1.6394284  -1.21592420   4.494781028 0.6929485
+## Thiamethoxam-Acetamiprid    4.3738126   1.80714109   6.940484045 0.0000050
+## Dinotefuran-Clothianidin   -5.4812185  -9.32765358  -1.634783428 0.0003529
+## Imidacloprid-Clothianidin   1.0702508  -1.62456668   3.765068330 0.9489438
+## Imidaclothiz-Clothianidin   4.4039039  -3.37603853  12.183846336 0.7094335
+## Nitenpyram-Clothianidin     5.6737452   0.22482121  11.122669133 0.0338611
+## Nithiazine-Clothianidin   -19.6769042 -25.02849460 -14.325313751 0.0000000
+## Thiacloprid-Clothianidin   -0.4084651  -3.74689228   2.929962144 0.9999879
+## Thiamethoxam-Clothianidin   2.3259191  -0.76921583   5.421054007 0.3218154
+## Imidacloprid-Dinotefuran    6.5514693   3.56304877   9.539889900 0.0000000
+## Imidaclothiz-Dinotefuran    9.8851224   1.99867071  17.771574107 0.0033119
+## Nitenpyram-Dinotefuran     11.1549637   5.55501829  16.754909074 0.0000000
+## Nithiazine-Dinotefuran    -14.1956857 -19.70096824  -8.690403099 0.0000000
+## Thiacloprid-Dinotefuran     5.0727534   1.49312883   8.652378050 0.0003937
+## Thiamethoxam-Dinotefuran    7.8071376   4.45326278  11.161012409 0.0000000
+## Imidaclothiz-Imidacloprid   3.3336531  -4.05979665  10.727102808 0.8976481
+## Nitenpyram-Imidacloprid     4.6034943  -0.27773162   9.484720319 0.0825706
+## Nithiazine-Imidacloprid   -20.7471550 -25.51948303 -15.974826981 0.0000000
+## Thiacloprid-Imidacloprid   -1.4787159  -3.77669129   0.819259503 0.5440493
+## Thiamethoxam-Imidacloprid   1.2556683  -0.67188326   3.183219776 0.5266734
+## Nitenpyram-Imidaclothiz     1.2698413  -7.51035405  10.050036590 0.9999561
+## Nithiazine-Imidaclothiz   -24.0808081 -32.80093294 -15.360683218 0.0000000
+## Thiacloprid-Imidaclothiz   -4.8123690 -12.46391482   2.839176871 0.5758935
+## Thiamethoxam-Imidaclothiz  -2.0779848  -9.62655539   5.470585757 0.9950400
+## Nithiazine-Nitenpyram     -25.3506494 -32.07402988 -18.627268825 0.0000000
+## Thiacloprid-Nitenpyram     -6.0822102 -11.34618420  -0.818236282 0.0103350
+## Thiamethoxam-Nitenpyram    -3.3478261  -8.46096463   1.765312458 0.5194316
+## Thiacloprid-Nithiazine     19.2684391  14.10528410  24.431594116 0.0000000
+## Thiamethoxam-Nithiazine    22.0028233  16.99353853  27.012107998 0.0000000
+## Thiamethoxam-Thiacloprid    2.7343842  -0.02215529   5.490923603 0.0538087
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#8}
+\NormalTok{Chem_Box_plot <-}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(EPA.ecotox, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Chemical.Name, }\DataTypeTok{y =}\NormalTok{ Pub..Year, }\DataTypeTok{color =}\NormalTok{ Chemical.Name)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x=} \StringTok{"Chemical Name"}\NormalTok{, }\DataTypeTok{y=}\StringTok{"Publication Year"}\NormalTok{, }\DataTypeTok{color =} \OtherTok{NULL}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{expand =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\CommentTok{#scale_color_manual(values = c("#7fcdbb", "yellow", "#1d91c0", "black", "green", "violet", "pink", "#225ea8", "red")) +}
+\StringTok{  }\KeywordTok{scale_color_viridis}\NormalTok{(}\DataTypeTok{discrete =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{,  }\DataTypeTok{hjust =} \DecValTok{1}\NormalTok{))}
+\KeywordTok{print}\NormalTok{(Chem_Box_plot)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A06_GLMs_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  How would you summarize the conclusion of your analysis? Include a
+  sentence summarizing your findings and include the results of your
+  test in parentheses at the end of the sentence.
+\end{enumerate}
+
+\begin{quote}
+ANSWER: There exists significant differences in the mean publication
+year for various chemicals (acetamiprid, clothianidin, dinotefuran,
+imidacloprid, imidaclothiz, nitenpyram, nithiazine, thiacloprid,
+thiamethoxam) (p-value \textless{} 0.05, df = 8).
+\end{quote}
+
+\subsection{NTL-LTER test}\label{ntl-lter-test}
+
+Research question: What is the best set of predictors for lake
+temperatures in July across the monitoring period at the North Temperate
+Lakes LTER?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{10}
+\tightlist
+\item
+  Wrangle your NTL-LTER dataset with a pipe function so that it contains
+  only the following criteria:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Only dates in July (hint: use the daynum column). No need to consider
+  leap years.
+\item
+  Only the columns: lakename, year4, daynum, depth, temperature\_C
+\item
+  Only complete cases (i.e., remove NAs)
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\tightlist
+\item
+  Run an AIC to determine what set of explanatory variables (year4,
+  daynum, depth) is best suited to predict temperature. Run a multiple
+  regression on the recommended set of variables.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#11 }
+\NormalTok{NTL_processed <-}\StringTok{ }\NormalTok{NTL }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(daynum }\OperatorTok{==}\StringTok{ }\DecValTok{182}\OperatorTok{:}\DecValTok{212}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(lakename, year4, daynum, depth, temperature_C) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(temperature_C) }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(depth))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in daynum == 182:212: longer object length is not a multiple of
+## shorter object length
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#12}
+
+\NormalTok{NTL_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NTL_processed}\OperatorTok{$}\NormalTok{temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{year4 }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{daynum }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{depth)}
+\KeywordTok{summary}\NormalTok{(NTL_}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = NTL_processed$temperature_C ~ NTL_processed$lakename + 
+##     NTL_processed$year4 + NTL_processed$daynum + NTL_processed$depth)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.5410 -2.9613  0.1268  2.8153 11.3393 
+## 
+## Coefficients:
+##                                          Estimate Std. Error t value
+## (Intercept)                            11.6123988 47.3388708   0.245
+## NTL_processed$lakenameCrampton Lake     4.1824152  2.7864181   1.501
+## NTL_processed$lakenameEast Long Lake   -0.2752175  2.6376999  -0.104
+## NTL_processed$lakenameHummingbird Lake -2.5876240  3.0266761  -0.855
+## NTL_processed$lakenamePaul Lake         2.2642841  2.5884021   0.875
+## NTL_processed$lakenamePeter Lake        3.3398972  2.5846910   1.292
+## NTL_processed$lakenameTuesday Lake      0.3166373  2.6138862   0.121
+## NTL_processed$lakenameWard Lake        -0.1899035  3.1560069  -0.060
+## NTL_processed$lakenameWest Long Lake    1.2167240  2.6295260   0.463
+## NTL_processed$year4                     0.0001768  0.0235463   0.008
+## NTL_processed$daynum                    0.0413728  0.0225936   1.831
+## NTL_processed$depth                    -1.9633331  0.0627321 -31.297
+##                                        Pr(>|t|)    
+## (Intercept)                              0.8064    
+## NTL_processed$lakenameCrampton Lake      0.1344    
+## NTL_processed$lakenameEast Long Lake     0.9170    
+## NTL_processed$lakenameHummingbird Lake   0.3933    
+## NTL_processed$lakenamePaul Lake          0.3824    
+## NTL_processed$lakenamePeter Lake         0.1973    
+## NTL_processed$lakenameTuesday Lake       0.9037    
+## NTL_processed$lakenameWard Lake          0.9521    
+## NTL_processed$lakenameWest Long Lake     0.6439    
+## NTL_processed$year4                      0.9940    
+## NTL_processed$daynum                     0.0681 .  
+## NTL_processed$depth                      <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.613 on 300 degrees of freedom
+## Multiple R-squared:  0.7757, Adjusted R-squared:  0.7674 
+## F-statistic:  94.3 on 11 and 300 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{NTL_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NTL_processed}\OperatorTok{$}\NormalTok{temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{daynum }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{depth)}
+\KeywordTok{summary}\NormalTok{(NTL_}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = NTL_processed$temperature_C ~ NTL_processed$lakename + 
+##     NTL_processed$daynum + NTL_processed$depth)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.5385 -2.9612  0.1263  2.8169 11.3365 
+## 
+## Coefficients:
+##                                        Estimate Std. Error t value
+## (Intercept)                            11.96570    5.09506   2.348
+## NTL_processed$lakenameCrampton Lake     4.18412    2.77248   1.509
+## NTL_processed$lakenameEast Long Lake   -0.27505    2.63322  -0.104
+## NTL_processed$lakenameHummingbird Lake -2.58667    3.01896  -0.857
+## NTL_processed$lakenamePaul Lake         2.26524    2.58096   0.878
+## NTL_processed$lakenamePeter Lake        3.34080    2.57762   1.296
+## NTL_processed$lakenameTuesday Lake      0.31715    2.60863   0.122
+## NTL_processed$lakenameWard Lake        -0.18697    3.12647  -0.060
+## NTL_processed$lakenameWest Long Lake    1.21703    2.62484   0.464
+## NTL_processed$daynum                    0.04137    0.02255   1.835
+## NTL_processed$depth                    -1.96332    0.06260 -31.361
+##                                        Pr(>|t|)    
+## (Intercept)                              0.0195 *  
+## NTL_processed$lakenameCrampton Lake      0.1323    
+## NTL_processed$lakenameEast Long Lake     0.9169    
+## NTL_processed$lakenameHummingbird Lake   0.3922    
+## NTL_processed$lakenamePaul Lake          0.3808    
+## NTL_processed$lakenamePeter Lake         0.1959    
+## NTL_processed$lakenameTuesday Lake       0.9033    
+## NTL_processed$lakenameWard Lake          0.9524    
+## NTL_processed$lakenameWest Long Lake     0.6432    
+## NTL_processed$daynum                     0.0676 .  
+## NTL_processed$depth                      <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.607 on 301 degrees of freedom
+## Multiple R-squared:  0.7757, Adjusted R-squared:  0.7682 
+## F-statistic: 104.1 on 10 and 301 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{NTL_}\DecValTok{3}\NormalTok{ <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NTL_processed}\OperatorTok{$}\NormalTok{temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{+}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{depth)}
+\KeywordTok{summary}\NormalTok{(NTL_}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = NTL_processed$temperature_C ~ NTL_processed$lakename + 
+##     NTL_processed$depth)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.6035 -2.8985 -0.0256  2.8815 11.9500 
+## 
+## Coefficients:
+##                                        Estimate Std. Error t value
+## (Intercept)                            20.04471    2.57258   7.792
+## NTL_processed$lakenameCrampton Lake     4.17829    2.78331   1.501
+## NTL_processed$lakenameEast Long Lake   -0.10632    2.64190  -0.040
+## NTL_processed$lakenameHummingbird Lake -2.42447    3.02946  -0.800
+## NTL_processed$lakenamePaul Lake         2.37121    2.59040   0.915
+## NTL_processed$lakenamePeter Lake        3.38412    2.58759   1.308
+## NTL_processed$lakenameTuesday Lake      0.33726    2.61881   0.129
+## NTL_processed$lakenameWard Lake         0.06044    3.13577   0.019
+## NTL_processed$lakenameWest Long Lake    1.23339    2.63508   0.468
+## NTL_processed$depth                    -1.96118    0.06284 -31.210
+##                                        Pr(>|t|)    
+## (Intercept)                            1.07e-13 ***
+## NTL_processed$lakenameCrampton Lake       0.134    
+## NTL_processed$lakenameEast Long Lake      0.968    
+## NTL_processed$lakenameHummingbird Lake    0.424    
+## NTL_processed$lakenamePaul Lake           0.361    
+## NTL_processed$lakenamePeter Lake          0.192    
+## NTL_processed$lakenameTuesday Lake        0.898    
+## NTL_processed$lakenameWard Lake           0.985    
+## NTL_processed$lakenameWest Long Lake      0.640    
+## NTL_processed$depth                     < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.621 on 302 degrees of freedom
+## Multiple R-squared:  0.7732, Adjusted R-squared:  0.7664 
+## F-statistic: 114.4 on 9 and 302 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{AIC}\NormalTok{(NTL_}\DecValTok{1}\NormalTok{, NTL_}\DecValTok{2}\NormalTok{, NTL_}\DecValTok{3}\NormalTok{) }\CommentTok{#Choose model 3 - most parsimonious - not much difference between AIC for each model}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       df      AIC
+## NTL_1 13 1700.677
+## NTL_2 12 1698.677
+## NTL_3 11 1700.147
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{12}
+\tightlist
+\item
+  What is the final linear equation to predict temperature from your
+  multiple regression? How much of the observed variance does this model
+  explain?
+\end{enumerate}
+
+\begin{quote}
+ANSWER: The final linear equation to predict temperature is as follows:
+Temperature = 20.04471 + coef*(lakename) - 1.96118(depth). This model
+explains about 77\% of the variance.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{13}
+\tightlist
+\item
+  Run an interaction effects ANCOVA to predict temperature based on
+  depth and lakename from the same wrangled dataset.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#14}
+\NormalTok{NTL_interaction <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(NTL_processed}\OperatorTok{$}\NormalTok{temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{lakename }\OperatorTok{*}\StringTok{ }\NormalTok{NTL_processed}\OperatorTok{$}\NormalTok{depth)}
+
+\KeywordTok{summary}\NormalTok{(NTL_interaction)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = NTL_processed$temperature_C ~ NTL_processed$lakename * 
+##     NTL_processed$depth)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.6100 -2.7826 -0.2609  2.8225 12.1803 
+## 
+## Coefficients: (1 not defined because of singularities)
+##                                                            Estimate
+## (Intercept)                                                19.54590
+## NTL_processed$lakenameCrampton Lake                         4.35631
+## NTL_processed$lakenameEast Long Lake                       -1.26077
+## NTL_processed$lakenameHummingbird Lake                     -0.04503
+## NTL_processed$lakenamePaul Lake                             3.76866
+## NTL_processed$lakenamePeter Lake                            3.98209
+## NTL_processed$lakenameTuesday Lake                          0.59795
+## NTL_processed$lakenameWard Lake                             8.38017
+## NTL_processed$lakenameWest Long Lake                        1.12336
+## NTL_processed$depth                                        -1.83647
+## NTL_processed$lakenameCrampton Lake:NTL_processed$depth    -0.04629
+## NTL_processed$lakenameEast Long Lake:NTL_processed$depth    0.22998
+## NTL_processed$lakenameHummingbird Lake:NTL_processed$depth -0.64710
+## NTL_processed$lakenamePaul Lake:NTL_processed$depth        -0.31070
+## NTL_processed$lakenamePeter Lake:NTL_processed$depth       -0.14529
+## NTL_processed$lakenameTuesday Lake:NTL_processed$depth     -0.07844
+## NTL_processed$lakenameWard Lake:NTL_processed$depth        -1.91234
+## NTL_processed$lakenameWest Long Lake:NTL_processed$depth         NA
+##                                                            Std. Error
+## (Intercept)                                                   2.66139
+## NTL_processed$lakenameCrampton Lake                           3.13662
+## NTL_processed$lakenameEast Long Lake                          2.87928
+## NTL_processed$lakenameHummingbird Lake                        3.81149
+## NTL_processed$lakenamePaul Lake                               2.76530
+## NTL_processed$lakenamePeter Lake                              2.73251
+## NTL_processed$lakenameTuesday Lake                            2.84690
+## NTL_processed$lakenameWard Lake                               5.40085
+## NTL_processed$lakenameWest Long Lake                          2.62700
+## NTL_processed$depth                                           0.19244
+## NTL_processed$lakenameCrampton Lake:NTL_processed$depth       0.36216
+## NTL_processed$lakenameEast Long Lake:NTL_processed$depth      0.27078
+## NTL_processed$lakenameHummingbird Lake:NTL_processed$depth    0.64119
+## NTL_processed$lakenamePaul Lake:NTL_processed$depth           0.23393
+## NTL_processed$lakenamePeter Lake:NTL_processed$depth          0.21836
+## NTL_processed$lakenameTuesday Lake:NTL_processed$depth        0.25389
+## NTL_processed$lakenameWard Lake:NTL_processed$depth           1.01063
+## NTL_processed$lakenameWest Long Lake:NTL_processed$depth           NA
+##                                                            t value
+## (Intercept)                                                  7.344
+## NTL_processed$lakenameCrampton Lake                          1.389
+## NTL_processed$lakenameEast Long Lake                        -0.438
+## NTL_processed$lakenameHummingbird Lake                      -0.012
+## NTL_processed$lakenamePaul Lake                              1.363
+## NTL_processed$lakenamePeter Lake                             1.457
+## NTL_processed$lakenameTuesday Lake                           0.210
+## NTL_processed$lakenameWard Lake                              1.552
+## NTL_processed$lakenameWest Long Lake                         0.428
+## NTL_processed$depth                                         -9.543
+## NTL_processed$lakenameCrampton Lake:NTL_processed$depth     -0.128
+## NTL_processed$lakenameEast Long Lake:NTL_processed$depth     0.849
+## NTL_processed$lakenameHummingbird Lake:NTL_processed$depth  -1.009
+## NTL_processed$lakenamePaul Lake:NTL_processed$depth         -1.328
+## NTL_processed$lakenamePeter Lake:NTL_processed$depth        -0.665
+## NTL_processed$lakenameTuesday Lake:NTL_processed$depth      -0.309
+## NTL_processed$lakenameWard Lake:NTL_processed$depth         -1.892
+## NTL_processed$lakenameWest Long Lake:NTL_processed$depth        NA
+##                                                            Pr(>|t|)    
+## (Intercept)                                                2.03e-12 ***
+## NTL_processed$lakenameCrampton Lake                          0.1659    
+## NTL_processed$lakenameEast Long Lake                         0.6618    
+## NTL_processed$lakenameHummingbird Lake                       0.9906    
+## NTL_processed$lakenamePaul Lake                              0.1740    
+## NTL_processed$lakenamePeter Lake                             0.1461    
+## NTL_processed$lakenameTuesday Lake                           0.8338    
+## NTL_processed$lakenameWard Lake                              0.1218    
+## NTL_processed$lakenameWest Long Lake                         0.6692    
+## NTL_processed$depth                                         < 2e-16 ***
+## NTL_processed$lakenameCrampton Lake:NTL_processed$depth      0.8984    
+## NTL_processed$lakenameEast Long Lake:NTL_processed$depth     0.3964    
+## NTL_processed$lakenameHummingbird Lake:NTL_processed$depth   0.3137    
+## NTL_processed$lakenamePaul Lake:NTL_processed$depth          0.1851    
+## NTL_processed$lakenamePeter Lake:NTL_processed$depth         0.5063    
+## NTL_processed$lakenameTuesday Lake:NTL_processed$depth       0.7576    
+## NTL_processed$lakenameWard Lake:NTL_processed$depth          0.0594 .  
+## NTL_processed$lakenameWest Long Lake:NTL_processed$depth         NA    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.603 on 295 degrees of freedom
+## Multiple R-squared:  0.7806, Adjusted R-squared:  0.7687 
+## F-statistic: 65.59 on 16 and 295 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{14}
+\tightlist
+\item
+  Is there an interaction between depth and lakename? How much variance
+  in the temperature observations does this explain?
+\end{enumerate}
+
+\begin{quote}
+ANSWER: No. The interaction is not explaining much and rather the depth
+alone is explaining most variance.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{15}
+\tightlist
+\item
+  Create a graph that depicts temperature by depth, with a separate
+  color for each lake. Add a geom\_smooth (method = ``lm'', se = FALSE)
+  for each lake. Make your points 50 \% transparent. Adjust your y axis
+  limits to go from 0 to 35 degrees. Clean up your graph to make it
+  pretty.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#16}
+
+\NormalTok{NTL_plot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(NTL_processed, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ depth, }\DataTypeTok{y =}\NormalTok{ temperature_C, }\DataTypeTok{color =}\NormalTok{ lakename)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.5}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }\DataTypeTok{se =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylim}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{35}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Depth, m"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Temperature, Celsius"}\NormalTok{, }\DataTypeTok{color =} \StringTok{"Lake Name"}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(NTL_plot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 44 rows containing missing values (geom_smooth).
+\end{verbatim}
+
+\includegraphics{A06_GLMs_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+
+\end{document}

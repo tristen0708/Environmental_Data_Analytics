@@ -125,7 +125,7 @@ print(Chem_Box_plot)
 
 9. How would you summarize the conclusion of your analysis? Include a sentence summarizing your findings and include the results of your test in parentheses at the end of the sentence. 
 
-> ANSWER: 
+> ANSWER: There exists significant differences in the mean publication year for various chemicals  (acetamiprid, clothianidin, dinotefuran, imidacloprid, imidaclothiz, nitenpyram, nithiazine, thiacloprid, thiamethoxam) (p-value < 0.05, df = 8).
 
 ## NTL-LTER test
 Research question: What is the best set of predictors for lake temperatures in July across the monitoring period at the North Temperate Lakes LTER? 
@@ -139,31 +139,55 @@ Research question: What is the best set of predictors for lake temperatures in J
 12. Run an AIC to determine what set of explanatory variables (year4, daynum, depth) is best suited to predict temperature. Run a multiple regression on the recommended set of variables. 
 
 ```{r}
-#11
+#11 
+NTL_processed <- NTL %>% filter(daynum == 182:212) %>%
+  select(lakename, year4, daynum, depth, temperature_C) %>%
+  filter(!is.na(temperature_C) & !is.na(depth))
 
 #12
+
+NTL_1 <- lm(NTL_processed$temperature_C ~ NTL_processed$lakename + NTL_processed$year4 + NTL_processed$daynum + NTL_processed$depth)
+summary(NTL_1)
+
+NTL_2 <- lm(NTL_processed$temperature_C ~ NTL_processed$lakename + NTL_processed$daynum + NTL_processed$depth)
+summary(NTL_2)
+
+NTL_3 <- lm(NTL_processed$temperature_C ~ NTL_processed$lakename + NTL_processed$depth)
+summary(NTL_3)
+
+AIC(NTL_1, NTL_2, NTL_3) #Choose model 3 - most parsimonious - not much difference between AIC for each model
 
 ```
 
 13. What is the final linear equation to predict temperature from your multiple regression? How much of the observed variance does this model explain?
 
-> ANSWER: 
+> ANSWER: The final linear equation to predict temperature is as follows: Temperature = 20.04471 + coef*(lakename) - 1.96118(depth). This model explains about 77% of the variance.
 
 14. Run an interaction effects ANCOVA to predict temperature based on depth and lakename from the same wrangled dataset.
 
 ```{r}
 #14
+NTL_interaction <- lm(NTL_processed$temperature_C ~ NTL_processed$lakename * NTL_processed$depth)
+
+summary(NTL_interaction)
 
 ```
 
 15. Is there an interaction between depth and lakename? How much variance in the temperature observations does this explain?
 
-> ANSWER: 
+> ANSWER: No. The interaction is not explaining much and rather the depth alone is explaining most variance.
 
 16. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r}
 #16
+
+NTL_plot <- ggplot(NTL_processed, aes(x = depth, y = temperature_C, color = lakename)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  ylim(0,35) +
+  labs(x = "Depth, m", y = "Temperature, Celsius", color = "Lake Name")
+print(NTL_plot)
 
 ```
 
