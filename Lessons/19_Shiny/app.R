@@ -45,12 +45,21 @@ ui <- navbarPage('probability distributions', id = 'nav', # specifies panels at 
                           sidebarLayout(
                             sidebarPanel(
                               sliderInput('pn',
-                                          'sample size'),
+                                          'sample size',
+                                          min = 0,
+                                          max= 500,
+                                          value= 100,
+                                          step= 50
+                                            ),
                               sliderInput('lambda',
-                                          '$$\\lambda$$'),
+                                          withMathJax('$$\\lambda$$'),
+                                          min = 0,
+                                          max = 10,
+                                          value = 1,
+                                          step = 0.1),
                               checkboxInput('phist', label = 'histogram', value = TRUE), 
                               checkboxInput('pdens', label = 'density', value = TRUE),
-                              colourInput('pcol', label = 'select a color')
+                              colourInput('pcol', label = 'select a color', value = '#e0c6c1')
                             ),
                             mainPanel(
                               tabsetPanel(position = 'below',
@@ -60,7 +69,7 @@ ui <- navbarPage('probability distributions', id = 'nav', # specifies panels at 
                             )
                           )
                  ),
-                 # binomial distribution
+                # binomial distribution
                  tabPanel('binomial',
                           headerPanel(withMathJax('$$P(x, p, n) = \\binom{n}{k}p^x(1-p)^{(n-x)}$$')),
                           sidebarLayout(
@@ -76,7 +85,10 @@ ui <- navbarPage('probability distributions', id = 'nav', # specifies panels at 
                                           max = 20,
                                           value = 10),
                               sliderInput('bprob',
-                                          'probability'),
+                                          'probability',
+                                          min = 0,
+                                          max = 1,
+                                          value = 0),
                               checkboxInput('bhist', label = 'histogram', value = TRUE), 
                               checkboxInput('bdens', label = 'density', value = TRUE),
                               colourInput('bcol', label = 'select a color', value = '#FF6666')
@@ -111,8 +123,8 @@ ui <- navbarPage('probability distributions', id = 'nav', # specifies panels at 
                                           max = 10,
                                           value = 1,
                                           step = 0.1),
-                              checkboxInput('ghist', label = 'histogram'), 
-                              checkboxInput('gdens', label = 'density'),
+                              checkboxInput('ghist', label = 'histogram'), value = TRUE, 
+                              checkboxInput('gdens', label = 'density', value = TRUE),
                               colourInput('gcol', label = 'select a color', value = '#FF6666')
                             ),
                             mainPanel(
@@ -123,8 +135,8 @@ ui <- navbarPage('probability distributions', id = 'nav', # specifies panels at 
                             )
                           )
                  )
+ 
 )
-
 
 # server
 server <- function(input, output) {
@@ -190,8 +202,10 @@ server <- function(input, output) {
     x <- rpois(input$pn, input$lambda) 
     
     p <- ggplot() + scale_x_continuous(limits = c(0, 20))
-
+    if(input$phist) p <- p + geom_histogram(aes(x, y = ..density..), bins = bins, colour = 'black', fill = 'white') 
+    if(input$pdens) p <- p + geom_density(aes(x), alpha = 0.2, fill = input$pcol) 
     p + theme_minimal()
+    
   })
     # qq plot
   
@@ -231,7 +245,7 @@ server <- function(input, output) {
     
     x <- rbinom(input$bn, input$bsize, input$bprob)
     
-    p <- ggplot() 
+    p <- ggplot() + scale_x_continuous(limits = c(0, 20))
     if(input$bhist) p <- p + geom_histogram(aes(x, y = ..density..), bins = bins, colour = 'black', fill = 'white')
     if(input$bdens) p <- p + geom_density(aes(x), alpha = 0.2, fill = input$bcol)
     p + theme_minimal()
@@ -244,7 +258,7 @@ server <- function(input, output) {
     x <- rbinom(input$bn, input$bsize, input$bprob) 
     
     qqnorm(x); qqline(x)
-  }
+  })
   
     # shapiro wilks test
   
@@ -274,7 +288,8 @@ server <- function(input, output) {
     
     set.seed(1001) 
     
-    x <- rgamma() 
+    x <- rgamma(input$gn, input$gshape, input$grate) 
+    
     
     p <- ggplot() + scale_x_continuous(limits = c(0, 20))
     if(input$ghist) p <- p + geom_histogram(aes(x, y = ..density..), bins = bins, colour = 'black', fill = 'white') # add hist if checked
@@ -286,7 +301,7 @@ server <- function(input, output) {
   output$gplot <- renderPlot({
     set.seed(1001)
     
-    x <- rgamma() 
+    x <- rgamma(input$gn, input$gshape, input$grate)  
     
     qqnorm(x); qqline(x)
   })
@@ -295,7 +310,7 @@ server <- function(input, output) {
   output$gtest <- renderPrint({
     set.seed(1001) 
     
-    x <- rgamma()
+    x <- rgamma(input$gn, input$gshape, input$grate) 
     
     test <- shapiro.test(x)
     test
